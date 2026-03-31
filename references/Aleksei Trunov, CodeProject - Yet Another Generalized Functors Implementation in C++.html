@@ -1,0 +1,1862 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0046)http://www.codeproject.com/cpp/genfunctors.asp -->
+<HTML><HEAD><TITLE>The Code Project - Yet Another Generalized Functors Implementation in C++ - C++ / MFC</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=iso-8859-1">
+<META content=en-US name=MS.LOCALE>
+<META http-equiv=Reply-to content=mailto:webmaster@codeproject.com>
+<META 
+content="An article on generalized functors implementation in C++. Generalized functor requirements, existing implementation problems and disadvantages are considered. Several new ideas and problem solutions together with the compete implementation are suggested." 
+name=Description>
+<META 
+content="Free source code, C++ / MFC, Visual C++, MFC, Windows, C++ generalized functors implementation" 
+name=keywords>
+<META 
+content="Article content copyright Aleksei Trunov, 2005, everthing else Copyright © CodeProject, 1999-2005, All Rights Reserved." 
+name=Copyright><LINK title="CodeProject Latest articles - All topics" 
+href="http://www.codeproject.com/webservices/articlerss.aspx?cat=1" 
+type=application/rss+xml rel=alternate><LINK 
+title="CodeProject Latest articles - MFC / C++" 
+href="http://www.codeproject.com/webservices/articlerss.aspx?cat=2" 
+type=application/rss+xml rel=alternate><LINK 
+title="CodeProject Latest articles - C#" 
+href="http://www.codeproject.com/webservices/articlerss.aspx?cat=3" 
+type=application/rss+xml rel=alternate><LINK 
+title="CodeProject Latest articles - ASP.NET" 
+href="http://www.codeproject.com/webservices/articlerss.aspx?cat=4" 
+type=application/rss+xml rel=alternate><LINK 
+title="CodeProject Latest articles - .NET" 
+href="http://www.codeproject.com/webservices/articlerss.aspx?cat=5" 
+type=application/rss+xml rel=alternate><LINK href="/favicon.ico" type=image/ico 
+rel=icon><LINK href="/favicon.ico" rel="SHORTCUT ICON"><LINK 
+href="Generalized Functors_files/global.css" type=text/css rel=stylesheet>
+<SCRIPT language=javascript src="Generalized Functors_files/oncopy.js"></SCRIPT>
+
+<META content="MSHTML 6.00.2800.1505" name=GENERATOR></HEAD>
+<BODY oncopy="return copyCode();" text=black vLink=purple aLink=red link=blue 
+bgColor=white leftMargin=3 topMargin=3>
+<TABLE cellSpacing=0 cellPadding=0 width="100%" bgColor=#ff9900 border=0>
+  <TBODY>
+  <TR>
+    <TD width="100%">
+      <TABLE cellSpacing=1 cellPadding=0 width="100%" bgColor=#ff9900 
+        border=0><TBODY>
+        <TR>
+          <TD vAlign=top><A href="http://www.codeproject.com/"><IMG height=72 
+            alt="The Code Project" 
+            src="Generalized Functors_files/logo225x72.gif" width=225 
+            border=0></A></TD>
+          <TD align=right><SPAN id=AdBanner4>
+            <TABLE cellSpacing=0 cellPadding=0>
+              <TBODY>
+              <TR>
+                <TD><A class=AdLink 
+                  href="http://www.codeproject.com/script/admentor/ads.asp">View 
+                  our advertisers</A></TD>
+                <TD align=right><A class=AdLink 
+                  href="http://www.codeproject.com/info/mediakit">Advertise with 
+                  us</A></TD></TR>
+              <TR>
+                <TD colSpan=2>
+                  <SCRIPT language=javascript>document.write("<a href=\"/script/admentor/admentorredir.asp?id=1117&way=ban\" target=_blank><img src=\"/script/admentor/include/ServeAd.aspx?File=%2Fscript%2Fadmentor%2Fimages%2FWholeTomato%5FAutoSuggest%2Egif&C=False&id=1117\" alt=\"The intellisense upgrade for Visual Studio .NET - make your IDE as smart as you.\" border=0 width=468 height=60></a>");</SCRIPT>
+                </TD></TR></TBODY></TABLE></SPAN></TD></TR>
+        <TR>
+          <TD bgColor=#fbedbb colSpan=2>
+            <TABLE cellPadding=3 width="100%" bgColor=#fbedbb border=0>
+              <TBODY>
+              <TR vAlign=top>
+                <TD width="100%"><FONT style="FONT-SIZE: 8pt"><A 
+                  href="http://www.codeproject.com/?cat=1">All Topics</A>, <A 
+                  href="http://www.codeproject.com/?cat=2">MFC / C++</A> 
+                  &gt;&gt; <A href="http://www.codeproject.com/cpp/">C++ / 
+                  MFC</A> &gt;&gt; <A 
+                  href="http://www.codeproject.com/cpp/#General">General</A></FONT><BR><BR><B><FONT 
+                  style="FONT-SIZE: 16pt" size=4>Yet Another Generalized 
+                  Functors Implementation in C++</FONT></B><BR><B>By <A 
+                  href="http://www.codeproject.com/script/profile/whos_who.asp?id=68533">Aleksei 
+                  Trunov</A> </B><BR><BR><FONT style="FONT-SIZE: 9pt">An article 
+                  on generalized functors implementation in C++. Generalized 
+                  functor requirements, existing implementation problems and 
+                  disadvantages are considered. Several new ideas and problem 
+                  solutions together with the compete implementation are 
+                  suggested.&nbsp;</FONT> </TD>
+                <TD vAlign=top align=right>
+                  <TABLE cellSpacing=0 cellPadding=1 width=200 border=0>
+                    <TBODY>
+                    <TR>
+                      <TD>&nbsp;</TD>
+                      <TD><FONT class=SmallText color=red 
+                        size=1><B>Advanced</B></FONT></TD></TR>
+                    <TR vAlign=top>
+                      <TD>&nbsp;</TD>
+                      <TD class=SmallText>C++ (VC7, 
+                        VC7.1)<BR>Windows<BR>Win32, VS<BR>Dev</TD></TR>
+                    <TR>
+                      <TD>&nbsp;</TD>
+                      <TD class=SmallText noWrap>Posted 11 Jun 2005 3:11</TD></TR>
+                    <TR vAlign=top>
+                      <TD><IMG height=16 
+                        src="Generalized Functors_files/hlp.gif" width=16></TD>
+                      <TD class=SmallText noWrap><A 
+                        href="http://www.codeproject.com/script/Articles/list_articles.asp?userid=68533">Articles 
+                        by this author</A></TD></TR>
+                    <TR vAlign=top>
+                      <TD></TD>
+                      <TD class=SmallText noWrap><B>4,749</B> 
+                    views</TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR>
+        <TR>
+          <TD colSpan=2>
+            <TABLE id=tblSiteToolbar cellSpacing=0 cellPadding=1 width="100%" 
+            border=0>
+              <TBODY>
+              <TR>
+                <FORM name=Search action=/info/search.asp method=post>
+                <TD vAlign=top align=left width="100%">
+                  <TABLE cellSpacing=0 cellPadding=1 border=0>
+                    <TBODY>
+                    <TR vAlign=center>
+                      <TD class=smallText><B><FONT 
+                        color=white>Search:</FONT></B></TD>
+                      <TD class=navbar noWrap><INPUT class=smallText 
+                        maxLength=255 size=18 name=target></TD>
+                      <TD vAlign=top><SELECT class=smallText name=st> 
+                          <OPTION value=kw selected>Articles</OPTION> <OPTION 
+                          value=au>Authors</OPTION></SELECT></TD>
+                      <TD><INPUT class=formButton type=submit value=Go></TD></TR></TBODY></TABLE></TD></FORM>
+                <TD>
+                  <DIV id=MenuPos 
+                  style="WIDTH: 380px; POSITION: relative; HEIGHT: 20px">
+                  <TABLE height=20 cellSpacing=0 cellPadding=2 width=375>
+                    <TBODY>
+                    <TR>
+                      <TD><A class=NavMenuItem 
+                        href="http://www.codeproject.com/info/faq.asp">Help!</A></TD>
+                      <TD><A class=NavMenuItem 
+                        href="http://www.codeproject.com/info/latest.asp">Articles</A></TD>
+                      <TD><A class=NavMenuItem 
+                        href="http://www.codeproject.com/script/comments/forums.asp">Message 
+                        Boards</A></TD>
+                      <TD><A class=NavMenuItem 
+                        href="http://www.codeproject.com/store/">StoreFront</A></TD>
+                      <TD><A class=NavMenuItem 
+                        href="http://www.codeproject.com/lounge.asp">Lounge</A></TD></TR></TBODY></TABLE></DIV></TD></TR></TBODY></TABLE>
+            <SCRIPT type=text/javascript>function Go(){return}</SCRIPT>
+
+            <SCRIPT src="Generalized Functors_files/cpmenu_var.js" 
+            type=text/javascript></SCRIPT>
+
+            <SCRIPT src="Generalized Functors_files/menu10_com.js" 
+            type=text/javascript></SCRIPT>
+          </TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE>
+<TABLE cellSpacing=0 cellPadding=1 border=0>
+  <TBODY>
+  <TR vAlign=top>
+    <TD vAlign=top bgColor=#fbedbb rowSpan=2>
+      <TABLE cellSpacing=0 cellPadding=0 border=0>
+        <SCRIPT language=javascript>
+function ErrorHandle() {}
+window.onerror = ErrorHandle;
+
+function OnNLSubmit(option)
+{
+	if (option=="up")
+		document.subForm.action = "/script/profile/modify.asp?ct=%2Fcpp%2Fgenfunctors%2Easp";
+	else if (option=="in")
+		document.subForm.action = "/script/profile/process_logon.asp?ct=%2Fcpp%2Fgenfunctors%2Easp";
+	document.subForm.submit();
+	return true;
+}
+</SCRIPT>
+
+        <TBODY>
+        <TR>
+          <TD>
+            <TABLE cellSpacing=3 cellPadding=0>
+              <TBODY>
+              <TR vAlign=top>
+                <TD></TD>
+                <TD></TD></TR>
+              <TR vAlign=top>
+                <TD></TD>
+                <TD class=InfoBarHeader>Toolbox</TD></TR>
+              <TR>
+                <TD bgColor=black colSpan=2><IMG height=1 
+                  src="Generalized Functors_files/space.gif" width=1></TD></TR>
+              <TR vAlign=top>
+                <TD><IMG height=16 
+                  src="Generalized Functors_files/sitebuild_icon.gif" 
+                width=16></TD>
+                <TD class=smallText><A 
+                  href="http://www.codeproject.com/script/submit/ReportProblem.asp?GUID=functors%2Fcpp6%2F11%2F2005">Broken 
+                  Article?</A></TD></TR>
+              <TR vAlign=top>
+                <TD></TD>
+                <TD></TD></TR>
+              <TR vAlign=top>
+                <TD><IMG height=16 
+                  src="Generalized Functors_files/support_icon.gif" width=16></TD>
+                <TD class=smallText><A 
+                  href="http://www.codeproject.com/store/"><B>VS.NET 2003 from 
+                  $899</B></A></TD></TR>
+              <TR vAlign=top>
+                <TD><IMG height=16 
+                  src="Generalized Functors_files/support_icon.gif" width=16></TD>
+                <TD class=smallText><A 
+                  href="http://www.codeproject.com/store/"><B>Ultimate Toolbox 
+                  $499</B></A></TD></TR>
+              <TR vAlign=top>
+                <TD></TD>
+                <TD></TD></TR>
+              <TR vAlign=top>
+                <TD><IMG height=16 src="Generalized Functors_files/print.gif" 
+                  width=16></TD>
+                <TD class=smallText><A 
+                  href="http://www.codeproject.com/cpp/genfunctors.asp?print=true" 
+                  target=_print>Print version</A></TD></TR>
+              <TR vAlign=top>
+                <TD><IMG height=16 src="Generalized Functors_files/link.gif" 
+                  width=16></TD>
+                <TD class=smallText><A 
+                  href="http://www.codeproject.com/script/profile/add_bookmark.asp?t=0&amp;ct=%2Fcpp%2Fgenfunctors%2Easp&amp;guid=functors%2Fcpp6%2F11%2F2005">Bookmark 
+                  this</A></TD></TR></TR>
+              <TR vAlign=top>
+                <TD><IMG height=16 src="Generalized Functors_files/mail.gif" 
+                  width=16></TD>
+                <TD class=SmallText><A 
+                  href="http://www.codeproject.com/script/recommend/form.asp?guid=functors%2Fcpp6%2F11%2F2005">Send 
+                  to a friend</A></TD></TR>
+              <TR vAlign=top>
+                <TD></TD>
+                <TD></TD></TR>
+              <TR vAlign=top>
+                <TD></TD>
+                <TD class=InfoBarHeader>My Profile</TD></TR>
+              <TR>
+                <TD bgColor=black colSpan=2><IMG height=1 
+                  src="Generalized Functors_files/space.gif" width=1></TD></TR>
+              <TR vAlign=top>
+                <TD><IMG height=16 
+                  src="Generalized Functors_files/profile_small.gif" 
+width=16></TD>
+                <TD class=smallText><A 
+                  href="http://www.codeproject.com/script/profile/modify.asp?ct=/cpp/genfunctors.asp">My 
+                  Settings</A></TD></TR>
+              <TR vAlign=top>
+                <TD><IMG height=16 
+                  src="Generalized Functors_files/submit_small.gif" width=16></TD>
+                <TD class=smallText><A 
+                  href="http://www.codeproject.com/script/articles/list_articles.asp?userid=846215">My 
+                  Articles</A></TD></TR>
+              <TR vAlign=top>
+                <TD><IMG height=16 
+                  src="Generalized Functors_files/bookmarks.gif" width=16></TD>
+                <TD class=smallText><A 
+                  href="http://www.codeproject.com/script/profile/bookmark_list.asp">My 
+                  Bookmarks</A></TD></TR>
+              <TR vAlign=top>
+                <TD><IMG height=16 
+                  src="Generalized Functors_files/logoff_small.gif" width=16></TD>
+                <TD class=smallText><A 
+                  href="http://www.codeproject.com/script/profile/logoff.asp?ct=/cpp/genfunctors.asp">Sign 
+                  out</A></TD></TR>
+              <TR>
+                <TD bgColor=black colSpan=2><IMG height=1 
+                  src="Generalized Functors_files/space.gif" 
+              width=1></TD></TR></TBODY></TABLE></TD></TR>
+        <TR>
+          <TD>&nbsp;</TD></TR>
+        <TR>
+          <TD>
+            <CENTER>
+            <SCRIPT language=javascript>document.write("<IFRAME src=\"/script/admentor/include/ServeAdHTML.aspx?C=False&id=1152\" border=0 frameborder=0 scrolling=no width=120 height=600></IFRAME>");</SCRIPT>
+            <BR></CENTER><BR></TD></TR></TBODY></TABLE></TD>
+    <TD width=5 rowSpan=2><IMG height=1 
+      src="Generalized Functors_files/space.gif" width=5> </TD>
+    <TD align=right width="100%" bgColor=white>
+      <TABLE width="100%">
+        <TBODY>
+        <TR vAlign=top>
+          <TD class=smallText vAlign=top noWrap></TD>
+          <TD noWrap align=right><A name=__top></A>
+            <TABLE>
+              <TBODY>
+              <TR>
+                <TD class=smallText align=right>15 members have rated this 
+                  article. Result:</TD>
+                <TD>
+                  <TABLE cellSpacing=0 cellPadding=0 border=2>
+                    <TBODY>
+                    <TR>
+                      <TD><IMG height=5 
+                        src="Generalized Functors_files/red.gif" width=20 
+                        border=0></TD>
+                      <TD><IMG height=5 
+                        src="Generalized Functors_files/red.gif" width=20 
+                        border=0></TD>
+                      <TD><IMG height=5 
+                        src="Generalized Functors_files/red.gif" width=20 
+                        border=0></TD>
+                      <TD><IMG height=5 
+                        src="Generalized Functors_files/red.gif" width=20 
+                        border=0></TD>
+                      <TD><IMG height=5 
+                        src="Generalized Functors_files/red.gif" width=18 
+                        border=0><IMG height=5 
+                        src="Generalized Functors_files/white.gif" width=2 
+                        border=0></TD></TR></TBODY></TABLE></TD></TR>
+              <TR>
+                <TD class=smallText align=right colSpan=2><A 
+                  title="Calculated as rating x Log10(# votes)" 
+                  href="http://www.codeproject.com/script/articles/top_articles.asp?st=2">Popularity: 
+                  5.75</A>. Rating: <B>4.89</B> out of 
+        5.</TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR>
+  <TR>
+    <TD vAlign=top width="100%">
+      <DIV id=contentdiv><!-- Article Starts -->
+      <UL class=download>
+        <LI><A 
+        href="http://www.codeproject.com/cpp/genfunctors/functors_src.zip">Download 
+        source files - 10.2 Kb</A> </LI></UL>
+      <H2>Introduction</H2>
+      <P>Generalized functors are important and powerful design artifacts. An 
+      excellent introduction in generalized functors idiom, its application and 
+      one of the best implementations can be found in [1]. I'll try to retell 
+      the primary ideas, concepts and implementation details below with a strong 
+      emphasis on the latter as it could be expected from the article title.</P>
+      <P>So let's discover generalized functors goals first. Suppose we have the 
+      following C++:</P><PRE><SPAN class=cpp-keyword>void</SPAN> f2(<SPAN class=cpp-keyword>int</SPAN>, <SPAN class=cpp-keyword>int</SPAN>) {...}
+<SPAN class=cpp-keyword>struct</SPAN> A {
+  <SPAN class=cpp-keyword>void</SPAN> f2(<SPAN class=cpp-keyword>int</SPAN>, <SPAN class=cpp-keyword>int</SPAN>) {...}
+};
+<SPAN class=cpp-keyword>struct</SPAN> B {
+  <SPAN class=cpp-keyword>void</SPAN> f2(<SPAN class=cpp-keyword>int</SPAN>, <SPAN class=cpp-keyword>int</SPAN>) {...}
+  <SPAN class=cpp-keyword>void</SPAN> f2const(<SPAN class=cpp-keyword>int</SPAN>, <SPAN class=cpp-keyword>int</SPAN>) <SPAN class=cpp-keyword>const</SPAN> {...}
+};
+<SPAN class=cpp-keyword>struct</SPAN> F {
+  <SPAN class=cpp-keyword>void</SPAN> <SPAN class=cpp-keyword>operator</SPAN>()(<SPAN class=cpp-keyword>int</SPAN>, <SPAN class=cpp-keyword>int</SPAN>) {...}
+};
+
+<SPAN class=cpp-keyword>void</SPAN> (*pf2)(<SPAN class=cpp-keyword>int</SPAN>, <SPAN class=cpp-keyword>int</SPAN>) = &amp;f2;
+A a;
+B b;
+<SPAN class=cpp-keyword>void</SPAN> (A::*paf2)(<SPAN class=cpp-keyword>int</SPAN>, <SPAN class=cpp-keyword>int</SPAN>) = &amp;A::f2;
+<SPAN class=cpp-keyword>void</SPAN> (B::*pbf2)(<SPAN class=cpp-keyword>int</SPAN>, <SPAN class=cpp-keyword>int</SPAN>) = &amp;A::f2;
+F f;</PRE>
+      <P>Collective notion for <CODE>pf2</CODE> (pointer to static function), 
+      <CODE>paf2</CODE> and <CODE>pbf2</CODE> (pointers to member functions), 
+      <CODE>f</CODE> (an instance of a class containing corresponding 
+      <CODE><SPAN class=cpp-keyword>operator</SPAN>()</CODE>) is <I>C++ callable 
+      entity</I> that means an entity to which functor-call <CODE><SPAN 
+      class=cpp-keyword>operator</SPAN> ()</CODE> can be applied:</P><PRE>pf2(<SPAN class=cpp-literal>1</SPAN>, <SPAN class=cpp-literal>2</SPAN>);
+A a;
+B* pb = <SPAN class=cpp-keyword>new</SPAN> B;
+a.*paf2(<SPAN class=cpp-literal>1</SPAN>, <SPAN class=cpp-literal>2</SPAN>);
+pb-&gt;*pbf2(<SPAN class=cpp-literal>1</SPAN>, <SPAN class=cpp-literal>2</SPAN>);
+f(<SPAN class=cpp-literal>1</SPAN>, <SPAN class=cpp-literal>2</SPAN>);</PRE>
+      <P>What if we want to treat all of them in some generic way, e.g. push 
+      them in some "container" and make all the above calls at once via a single 
+      method call of such a "container"? The first way to implement this is to 
+      develop a special "container" class. Another one is to design a universal 
+      adapter class capable to store and make calls for all callable entities 
+      above. Then this adapter class instances can be stored in <I>std</I> 
+      containers as usual. The latter way is more generic because this adapter 
+      class can be used in other applications. It is the class that is called 
+      generalized functor. The following pseudocode introduces it:</P><PRE><SPAN class=cpp-keyword>typedef</SPAN> Functor&lt;
+  ...
+  <SPAN class=cpp-keyword>template</SPAN> arguments that transfer in some way 
+  the <SPAN class=cpp-keyword>return</SPAN> type and types of all parameters 
+  of <SPAN class=cpp-keyword>operator</SPAN>() - <SPAN class=cpp-keyword>void</SPAN> and <SPAN class=cpp-keyword>int</SPAN>, <SPAN class=cpp-keyword>int</SPAN> <SPAN class=cpp-keyword>for</SPAN> <SPAN class=cpp-keyword>this</SPAN> example 
+  ...
+&gt; Functor2;             <SPAN class=cpp-comment>// (0)</SPAN>
+Functor2 fun1(f2);         <SPAN class=cpp-comment>// (1) </SPAN>
+Functor2 fun2(&amp;a, A::f2);  <SPAN class=cpp-comment>// (2) </SPAN>
+Functor2 fun3(&amp;b, B::f2);  <SPAN class=cpp-comment>// (2)</SPAN>
+Functor2 fun4(f);          <SPAN class=cpp-comment>// (3)</SPAN>
+fun1(<SPAN class=cpp-literal>1</SPAN>, <SPAN class=cpp-literal>2</SPAN>);                <SPAN class=cpp-comment>// (4)</SPAN>
+fun2(<SPAN class=cpp-literal>1</SPAN>, <SPAN class=cpp-literal>2</SPAN>);                <SPAN class=cpp-comment>// (4)</SPAN>
+fun3(<SPAN class=cpp-literal>1</SPAN>, <SPAN class=cpp-literal>2</SPAN>);                <SPAN class=cpp-comment>// (4)</SPAN>
+fun4(<SPAN class=cpp-literal>1</SPAN>, <SPAN class=cpp-literal>2</SPAN>);                <SPAN class=cpp-comment>// (4)</SPAN>
+<SPAN class=cpp-comment>// fun1(1);                // (5)</SPAN>
+<SPAN class=cpp-comment>// fun2(1, 2, 3);          // (5)</SPAN>
+<SPAN class=cpp-comment>// fun3(1, true);          // (5)</SPAN>
+<SPAN class=cpp-comment>// bool r = fun4(1, 2);    // (5)</SPAN>
+Functor2 fun;              <SPAN class=cpp-comment>// (6) </SPAN>
+fun = fun1;                <SPAN class=cpp-comment>// (7) </SPAN>
+fun = fun2;                <SPAN class=cpp-comment>// (7)</SPAN>
+fun = fun3;                <SPAN class=cpp-comment>// (7)</SPAN>
+fun = fun4;                <SPAN class=cpp-comment>// (7)</SPAN>
+<SPAN class=cpp-comment>// -------------------------------------------</SPAN>
+<SPAN class=cpp-keyword>class</SPAN> FunSet 
+{
+  <SPAN class=cpp-keyword>typedef</SPAN> std::vector&lt;Functor2&gt; FV;
+  FV fv_;
+<SPAN class=cpp-keyword>public</SPAN>:
+  FunSet&amp; <SPAN class=cpp-keyword>operator</SPAN>+=(Functor2 <SPAN class=cpp-keyword>const</SPAN>&amp; f) 
+  { 
+    fv_.push_back(f);             <SPAN class=cpp-comment>// (8)</SPAN>
+    <SPAN class=cpp-keyword>return</SPAN> *<SPAN class=cpp-keyword>this</SPAN>;
+  }
+  <SPAN class=cpp-keyword>void</SPAN> <SPAN class=cpp-keyword>operator</SPAN>()(<SPAN class=cpp-keyword>int</SPAN> i1, <SPAN class=cpp-keyword>int</SPAN> i2) <SPAN class=cpp-keyword>const</SPAN> 
+  { 
+    FV::const_iterator i = fv_.begin();
+    <SPAN class=cpp-keyword>for</SPAN>(; i != fv_.end(); ++i) 
+      (*i)(i1, i2);
+};
+FunSet fs;
+fs += fun1;
+fs += fun2;
+fs += fun3;
+fs += fun4;
+fs(<SPAN class=cpp-literal>1</SPAN>, <SPAN class=cpp-literal>2</SPAN>);</PRE>
+      <P>The above example is simple but has several important issues. First, it 
+      shows an application of generalized functors and the power together with 
+      the convenience achieved. Particularly, the fact that all fun</CODE>, 
+      <CODE>fun1</CODE>-<CODE>fun4</CODE> are of the same type 
+      (<CODE>Functor2</CODE>) gives a simple way to solve the above problem of 
+      "container" for different callable entities. Second, this example 
+      implicitly contains the requirements for a possible generalized functor 
+      implementation. We'll frequently refer to them later so let's 
+      emphasize:</P>
+      <TABLE width="100%" border=0>
+        <TBODY>
+        <TR>
+          <TD vAlign=top align=middle width="4%"><B>R1.</B></TD>
+          <TD width="96%">
+            <P>Lines 1-3 imply a universal support for all kinds of callable 
+            entities and demand corresponding ctors. </P></TD></TR>
+        <TR>
+          <TD vAlign=top align=middle><B>R2.</B></TD>
+          <TD>
+            <P>Lines 4 and 5 imply function call of underlying callable entity 
+            instance to be type safe. This means that if lines (5) will be 
+            uncommented, they even should not be compilable since they try to do 
+            a call either with inappropriate number or types of arguments or 
+            with inappropriate return type.</P></TD></TR>
+        <TR>
+          <TD vAlign=top align=middle><B>R3.</B></TD>
+          <TD>
+            <P>Lines 6-8 imply full support of value semantics, i.e. the need of 
+            proper default ctor, operator=, copy ctor and dtor. This is 
+            important and very convenient, taking into account that C++ forbids 
+            assignment and conversions for raw callable entities of different 
+            kinds.</P></TD></TR></TBODY></TABLE>
+      <P>There are additional issues touched at line 0. They concern some other 
+      important implementation details:</P>
+      <TABLE width="100%" border=0>
+        <TBODY>
+        <TR>
+          <TD vAlign=top align=middle width="4%"><B>D1.</B></TD>
+          <TD width="96%">
+            <P>The above listing shows an example of functor for callable 
+            entities with function-call <CODE><SPAN 
+            class=cpp-keyword>operator</SPAN> ()</CODE> taking two <CODE><SPAN 
+            class=cpp-keyword>int</SPAN></CODE>s as parameters and returning 
+            <CODE><SPAN class=cpp-keyword>void</SPAN></CODE>. Other parameters 
+            and return types should be supported of course that leads to a 
+            question about the way of parameterization of generalized functor 
+            template.</P></TD></TR>
+        <TR>
+          <TD vAlign=top align=middle><B>D2.</B></TD>
+          <TD>
+            <P>But what about different counts of arguments of underlying 
+            function-call <CODE><SPAN class=cpp-keyword>operator</SPAN> 
+            ()</CODE> ? Of course again, this should be supported, the problem 
+            is how to implement it as clear as possible. This is not easy in C++ 
+            as it will be shown.</P></TD></TR></TBODY></TABLE>
+      <H2>Known Implementations</H2>
+      <P>The two known implementations of generalized functors are provided by 
+      Loki [2] and boost [3] libraries (the latter is proposed to C++ standard 
+      [4]). Providing full generalized functor semantics and functionality, they 
+      are completely different in internal implementation, from concepts to 
+      resulting complexity. Of course there are other implementations as well. 
+      Going through mentioned <B>R1</B>, <B>R2</B>, <B>R3</B>, <B>D1</B> and 
+      <B>D2</B> issues, we'll build our own one.</P>
+      <P>Let's consider <B>D1</B> issues now. Two main ways to parameterize the 
+      generalized functor template are possible. The first uses function types, 
+      the second uses a pair of return type and typelist containing types of all 
+      arguments of the corresponding function-call <CODE><SPAN 
+      class=cpp-keyword>operator</SPAN> ()</CODE>:</P>
+      <TABLE cellSpacing=0 cellPadding=0 border=0>
+        <TBODY>
+        <TR>
+          <TD width=456><PRE><SPAN class=cpp-keyword>template</SPAN> &lt;<SPAN class=cpp-keyword>class</SPAN> F&gt; <SPAN class=cpp-keyword>class</SPAN> Functor;
+and 
+<SPAN class=cpp-keyword>template</SPAN> &lt;<SPAN class=cpp-keyword>class</SPAN> R, <SPAN class=cpp-keyword>class</SPAN> TList&gt; <SPAN class=cpp-keyword>class</SPAN> Functor;</PRE></TD>
+          <TD width=24><PRE lang=text>(a)
+
+(b)</PRE></TD></TR></TBODY></TABLE>
+      <P>to use them as following:</P>
+      <TABLE cellSpacing=0 cellPadding=0 border=0>
+        <TBODY>
+        <TR>
+          <TD><PRE><SPAN class=cpp-keyword>typedef</SPAN> Functor&lt;<SPAN class=cpp-keyword>void</SPAN> (*)(<SPAN class=cpp-keyword>int</SPAN>, <SPAN class=cpp-keyword>int</SPAN>)&gt; Functor2;
+<SPAN class=cpp-comment>//and </SPAN>
+<SPAN class=cpp-keyword>typedef</SPAN> Functor&lt;<SPAN class=cpp-keyword>void</SPAN>, TYPELIST_2(<SPAN class=cpp-keyword>int</SPAN>, <SPAN class=cpp-keyword>int</SPAN>)&gt; Functor2;
+<SPAN class=cpp-keyword>typedef</SPAN> Functor&lt;<SPAN class=cpp-keyword>void</SPAN>, CreateTL&lt;<SPAN class=cpp-keyword>int</SPAN>, <SPAN class=cpp-keyword>int</SPAN>&gt;::Type&gt; Functor2;
+</PRE></TD>
+          <TD><PRE lang=text>(a)
+
+(b)
+
+</PRE></TD></TR></TBODY></TABLE>
+      <P><I>Note: In case (b) <CODE>TYPELIST</CODE> and <CODE>CreateTL</CODE> 
+      are a macro [1] and a meta-template respectively used to generate 
+      typelists.</I></P>
+      <P>Case (a) (used in boost) looks more elegant, but has several drawbacks. 
+      Functions with the same signature can have different modifiers. 
+      Cv-qualifiers (const and volatile) are the first important example. They 
+      can be applied to member functions only, thus e.g.</P><PRE><SPAN class=cpp-keyword>typedef</SPAN> Functor&lt;<SPAN class=cpp-keyword>void</SPAN> (*)(<SPAN class=cpp-keyword>int</SPAN>, <SPAN class=cpp-keyword>int</SPAN>) <SPAN class=cpp-keyword>const</SPAN>&gt; Functor2;</PRE>
+      <P>declaration will be rejected by C++ compiler because corresponding 
+      function type is invalid. So the question arises - how to create a 
+      generalized functor instance for <CODE>B::f2const</CODE> function in this 
+      case? It is possible of course but at the cost of unnecessary code 
+      complication spoiling initial elegance. Other examples are 
+      <CODE>__cdecl</CODE>, <CODE>__stdcall</CODE>, <CODE>__fastcall</CODE> 
+      (both for non-member and member functions) and implicit 
+      <CODE>__thiscall</CODE> (for member functions) modifiers. Yes, they all 
+      are non-standard extensions provided by compiler vendors, but some of that 
+      vendors are too important to ignore. The problem is that function types 
+      with different modifiers are different types, the same can be said about 
+      functors instantiated with them. Summing up, function type is a <I>too 
+      low-level</I> entity to use for parameterization of such a high level 
+      entity as generalized functors.</P>
+      <P>Cases (b) are free from the above disadvantages though they look a bit 
+      less elegant. But we could fight for elegance, providing functor creation 
+      functions for example. With their help we could bring client code to the 
+      following nice syntax:</P><PRE>FunSet fs;
+fs += MakeFunctor(f2);
+fs += MakeFunctor(A::f2, &amp;a);
+fs += MakeFunctor(B::f2, &amp;b);</PRE>
+      <P>To implement <CODE>MakeFunctor</CODE> functions we need mapping between 
+      function type and its return type and typelist containing types of all its 
+      arguments, which can be defined using common traits idiom:</P><PRE><SPAN class=cpp-keyword>template</SPAN> &lt;<SPAN class=cpp-keyword>typename</SPAN> F&gt; <SPAN class=cpp-keyword>struct</SPAN> FunTraits;
+<SPAN class=cpp-comment>//... partial specializations for different numbers</SPAN>
+<SPAN class=cpp-comment>//    of arguments of the function types ... </SPAN>
+<SPAN class=cpp-keyword>template</SPAN> &lt;<SPAN class=cpp-keyword>typename</SPAN> R, <SPAN class=cpp-keyword>typename</SPAN> P1, P2&gt;
+<SPAN class=cpp-keyword>struct</SPAN> FunTraits&lt;R (*)(P1, P2)&gt; 
+{
+  <SPAN class=cpp-keyword>typedef</SPAN> NullType ObjType;
+  <SPAN class=cpp-keyword>typedef</SPAN> R ResultType;
+  <SPAN class=cpp-keyword>typedef</SPAN> P1 Parm1;
+  <SPAN class=cpp-keyword>typedef</SPAN> P2 Parm2;
+  <SPAN class=cpp-keyword>typedef</SPAN> TYPELIST_2(P1, P2) TypeListType;
+};
+<SPAN class=cpp-comment>//... specializations for types with __cdecl,</SPAN>
+<SPAN class=cpp-comment>//    __stdcall etc. modifies can be here ...</SPAN>
+<SPAN class=cpp-keyword>template</SPAN> &lt;<SPAN class=cpp-keyword>class</SPAN> O, <SPAN class=cpp-keyword>typename</SPAN> R, P1, P2&gt;
+<SPAN class=cpp-keyword>struct</SPAN> FunTraits&lt;R (O::*)(P1, P2)&gt; 
+{
+  <SPAN class=cpp-keyword>typedef</SPAN> O ObjType;
+  <SPAN class=cpp-keyword>typedef</SPAN> R ResultType;
+  <SPAN class=cpp-keyword>typedef</SPAN> P1 Parm1;
+  <SPAN class=cpp-keyword>typedef</SPAN> P2 Parm2;
+  <SPAN class=cpp-keyword>typedef</SPAN> TYPELIST_2(P1, P2) TypeListType;
+};
+... specializations <SPAN class=cpp-keyword>for</SPAN> all combinations of cv-qualified types should be here ...
+</PRE>
+      <P>Functor creation helper functions are very simple to implement now:</P><PRE><SPAN class=cpp-keyword>template</SPAN> &lt;<SPAN class=cpp-keyword>typename</SPAN> F&gt; <SPAN class=cpp-keyword>inline</SPAN> 
+Functor&lt;<SPAN class=cpp-keyword>typename</SPAN> FunTraits&lt;F&gt;::ResultType, 
+    <SPAN class=cpp-keyword>typename</SPAN> FunTraits&lt;F&gt;::TypeListType&gt; MakeFunctor(F fun)
+{
+  <SPAN class=cpp-keyword>return</SPAN> Functor&lt;<SPAN class=cpp-keyword>typename</SPAN> FunTraits&lt;F&gt;::ResultType, 
+         <SPAN class=cpp-keyword>typename</SPAN> FunTraits&lt;F&gt;::TypeListType&gt;(fun);
+}
+<SPAN class=cpp-keyword>template</SPAN> &lt;<SPAN class=cpp-keyword>typename</SPAN> MF, <SPAN class=cpp-keyword>class</SPAN> P&gt; <SPAN class=cpp-keyword>inline</SPAN> 
+Functor&lt;<SPAN class=cpp-keyword>typename</SPAN> FunTraits&lt;MF&gt;::ResultType, 
+    <SPAN class=cpp-keyword>typename</SPAN> FunTraits&lt;MF&gt;::TypeListType&gt; 
+MakeFunctor(MF memfun, P <SPAN class=cpp-keyword>const</SPAN>&amp; pobj)
+{
+  <SPAN class=cpp-keyword>return</SPAN> Functor&lt;<SPAN class=cpp-keyword>typename</SPAN> FunTraits&lt;MF&gt;::ResultType, 
+         <SPAN class=cpp-keyword>typename</SPAN> FunTraits&lt;MF&gt;::TypeListType&gt;(pobj, memfun);
+}</PRE>
+      <P>Let's move to requirement <B>R1</B> considerations. You can readily 
+      observe that a generalized functor class template is parameterized by 
+      types completely unrelated to types of objects that are passed to its 
+      ctors. This means that those ctors should be defined as member 
+      templates:</P><PRE><SPAN class=cpp-keyword>template</SPAN> &lt;<SPAN class=cpp-keyword>class</SPAN> R, <SPAN class=cpp-keyword>class</SPAN> TList&gt; 
+<SPAN class=cpp-keyword>class</SPAN> Functor
+{
+<SPAN class=cpp-keyword>public</SPAN>:
+  <SPAN class=cpp-comment>// ctor for non-member functions and arbitrary functors</SPAN>
+  <SPAN class=cpp-keyword>template</SPAN> &lt;<SPAN class=cpp-keyword>typename</SPAN> F&gt; Functor(F <SPAN class=cpp-keyword>const</SPAN>&amp; fun) { ... } 
+  <SPAN class=cpp-comment>// ctor for member functions </SPAN>
+  <SPAN class=cpp-keyword>template</SPAN> &lt;<SPAN class=cpp-keyword>typename</SPAN> P, <SPAN class=cpp-keyword>typename</SPAN> MF&gt; Functor(P <SPAN class=cpp-keyword>const</SPAN>&amp; pobj, MF memfn) { ... } 
+  ...
+};</PRE>
+      <P>Only the ctors know the callable entity type and it get lost after 
+      ctors exit. But some operations still require callable entities type 
+      knowledge, e.g. functor copying, assignment and destruction operations. 
+      <CODE><SPAN class=cpp-keyword>operator</SPAN>()</CODE> should also forward 
+      call to the underlying callable entity instance differently according to 
+      its actual type. So template ctors should store callable entity type 
+      information in some "universal form", which allows treating it later in 
+      some polymorphic way. The most straightforward solution is as follows:</P><PRE><SPAN class=cpp-keyword>template</SPAN> &lt;<SPAN class=cpp-keyword>class</SPAN> R, <SPAN class=cpp-keyword>class</SPAN> TList&gt; 
+<SPAN class=cpp-keyword>class</SPAN> Functor
+{
+  <SPAN class=cpp-keyword>struct</SPAN> FunImplBase
+  {
+    <SPAN class=cpp-keyword>virtual</SPAN> R call_(...params evaluated from TList...) = <SPAN class=cpp-literal>0</SPAN>;
+    ...
+  };
+  <SPAN class=cpp-keyword>template</SPAN> &lt;<SPAN class=cpp-keyword>typename</SPAN> F&gt;
+  <SPAN class=cpp-keyword>class</SPAN> FunctorImpl : <SPAN class=cpp-keyword>public</SPAN> FunImplBase
+  {
+    F fun_;
+  <SPAN class=cpp-keyword>public</SPAN>:
+    FunctorImpl(F <SPAN class=cpp-keyword>const</SPAN>&amp; fun) : fun_(fun) {}
+    <SPAN class=cpp-keyword>virtual</SPAN> R call_(...params evaluated from TList...)
+        { ... use params to make a call to fun_ ... }
+    ...
+  };
+  <SPAN class=cpp-keyword>template</SPAN> &lt;<SPAN class=cpp-keyword>typename</SPAN> P, <SPAN class=cpp-keyword>typename</SPAN> MF&gt; 
+  <SPAN class=cpp-keyword>class</SPAN> MemberFnImpl : <SPAN class=cpp-keyword>public</SPAN> FunImplBase
+  {
+    P pobj_;
+    MF memfun_;
+  <SPAN class=cpp-keyword>public</SPAN>:
+    MemberFnImpl(P <SPAN class=cpp-keyword>const</SPAN>&amp; pobj, MF memfun) : pobj_(pobj), memfun_(fun) {}
+    <SPAN class=cpp-keyword>virtual</SPAN> R call_(...params evaluated from TList...)
+        { ... use params to make a call to memfun_ of pobj_ ... }
+    ...
+  };
+  FunImplBase *pimpl_;
+<SPAN class=cpp-keyword>public</SPAN>:
+  <SPAN class=cpp-comment>// ctor for non-member functions and arbitrary functors</SPAN>
+  <SPAN class=cpp-keyword>template</SPAN> &lt;<SPAN class=cpp-keyword>typename</SPAN> F&gt; Functor(F <SPAN class=cpp-keyword>const</SPAN>&amp; fun) 
+  {
+    pimpl_ = <SPAN class=cpp-keyword>new</SPAN> FunctorImpl&lt;F&gt;(fun);
+  }
+  <SPAN class=cpp-comment>// ctor for member functions </SPAN>
+  <SPAN class=cpp-keyword>template</SPAN> &lt;<SPAN class=cpp-keyword>typename</SPAN> P, <SPAN class=cpp-keyword>typename</SPAN> MF&gt; Functor(P <SPAN class=cpp-keyword>const</SPAN>&amp; pobj, MF memfn) 
+  {
+    pimpl_ = <SPAN class=cpp-keyword>new</SPAN> MemberFnImpl&lt;P, MF&gt;(pobj, memfn);
+  } 
+  ...
+  R <SPAN class=cpp-keyword>operator</SPAN>(...params evaluated from TList...)
+  {
+    <SPAN class=cpp-keyword>return</SPAN> pimpl_-&gt;call_(... params ...);
+  }
+  ...
+};</PRE>
+      <P>In the above example, an abstract base class <CODE>FunImplBase</CODE> 
+      defines all operations depending on different callable entity types. 
+      <CODE>FunctorImpl</CODE> and <CODE>MemberFnImpl</CODE> are its concrete 
+      successors implementing those operations for non-member functions together 
+      with arbitrary functors and member functions respectively. Generalized 
+      functor template itself incorporates a pointer to 
+      <CODE>FunImplBase</CODE>, initializes it in corresponding ctors and uses 
+      where it is needed. It should be noted that the above example conceptually 
+      resembles Loki's functor template.</P>
+      <P>Let's address <B>R2</B> and <B>D2</B> issues now. Using typelists you 
+      can pack an arbitrary number of different types into one type and this is 
+      great for many generic algorithms. But this very <I>arbitrary number</I> 
+      of types should be <I>fixed</I> in typelists design (and usually is chosen 
+      high enough to fit all uses). The similar problem - C++ has no facilities 
+      to manipulate function parameters count and so you can't treat them in 
+      generic way. In our case having some 
+      <CODE>TypeList&lt;T1,T2,T3,...Tn&gt;</CODE> type of arbitrary length, it 
+      would be nice to generate corresponding function e.g. <CODE><SPAN 
+      class=cpp-keyword>operator</SPAN>()(T1,T2,T3,...Tn)</CODE>. This would 
+      completely solve the problem of type safe function-call. But as we already 
+      said this can't be done in C++ and we are to find out roundabout ways. 
+      There are two ones. In the following first way we can declare a functor 
+      class template and then define partial specializations for all possible 
+      count of types in <CODE><SPAN 
+      class=cpp-keyword>operator</SPAN>()</CODE>:</P><PRE><SPAN class=cpp-keyword>template</SPAN> &lt;<SPAN class=cpp-keyword>class</SPAN> R, <SPAN class=cpp-keyword>class</SPAN> TList&gt; <SPAN class=cpp-keyword>class</SPAN> Functor;
+<SPAN class=cpp-keyword>template</SPAN> &lt;<SPAN class=cpp-keyword>class</SPAN> R&gt; <SPAN class=cpp-keyword>class</SPAN> Functor&lt;R, TYPELIST_0(P1)&gt; { ... };
+<SPAN class=cpp-keyword>template</SPAN> &lt;<SPAN class=cpp-keyword>class</SPAN> R, <SPAN class=cpp-keyword>class</SPAN> P1&gt; <SPAN class=cpp-keyword>class</SPAN> Functor&lt;R, TYPELIST_1(P1)&gt; { ... };
+<SPAN class=cpp-keyword>template</SPAN> &lt;<SPAN class=cpp-keyword>class</SPAN> R, <SPAN class=cpp-keyword>class</SPAN> P1, <SPAN class=cpp-keyword>class</SPAN> P2&gt; 
+                      <SPAN class=cpp-keyword>class</SPAN> Functor&lt;R, TYPELIST_2(P1, P2)&gt; { ... };
+...</PRE>
+      <P>But in this case each specialization also contains all the code 
+      independent from the <CODE><SPAN 
+      class=cpp-keyword>operator</SPAN>()</CODE> arguments count. One can try to 
+      factor out this code in some way, into base classes for example (as boost 
+      does) etc. But the result seems not to be good.</P>
+      <P>In the second way we define a single front-end functor template and 
+      simply overload all possible <CODE><SPAN 
+      class=cpp-keyword>operator</SPAN>()</CODE>:</P><PRE><SPAN class=cpp-keyword>template</SPAN> &lt;<SPAN class=cpp-keyword>class</SPAN> R, <SPAN class=cpp-keyword>class</SPAN> TList&gt; <SPAN class=cpp-keyword>class</SPAN> Functor 
+{
+  ...
+  <SPAN class=cpp-keyword>operator</SPAN>()()
+  <SPAN class=cpp-keyword>operator</SPAN>()(T1)
+  <SPAN class=cpp-keyword>operator</SPAN>()(T1,T2)
+  ...
+  <SPAN class=cpp-keyword>operator</SPAN>()(T1,T2,...Tn)
+  ...
+  <SPAN class=cpp-keyword>operator</SPAN>()(T1,T2,T3,...Tmax)
+};</PRE>
+      <P>This solves the problem but introduces potential bugs. If we try to use 
+      the resulting generalized functor template as in the opening code listings 
+      and uncomment commented lines 5, the compiler will gaily compile them 
+      guaranteeing runtime crash! The solution is to take 
+      <CODE>FunImplBase</CODE>, <CODE>FunctorImpl</CODE> and 
+      <CODE>MemberFnImpl</CODE> declarations out of <CODE>Functor</CODE> 
+      template and to define specializations for all possible count of types in 
+      call_ functions. See an example for <CODE>FunImplBase</CODE>:</P><PRE><SPAN class=cpp-keyword>template</SPAN> &lt;<SPAN class=cpp-keyword>class</SPAN> R, <SPAN class=cpp-keyword>class</SPAN> TList&gt; <SPAN class=cpp-keyword>struct</SPAN> FunImplBase;
+... partial specializations <SPAN class=cpp-keyword>for</SPAN> different numbers of arguments ... 
+<SPAN class=cpp-keyword>template</SPAN> &lt;<SPAN class=cpp-keyword>class</SPAN> R, <SPAN class=cpp-keyword>typename</SPAN> P1, P2&gt; 
+<SPAN class=cpp-keyword>struct</SPAN> FunImplBase&lt;R, TYPELIST_2(P1, P2)&gt;
+{
+  <SPAN class=cpp-keyword>virtual</SPAN> R call_(P1 p1, P2 p2) = <SPAN class=cpp-literal>0</SPAN>;
+  ...
+};</PRE>
+      <P>There are a number of specializations here, but each one contains only 
+      one suitable <CODE>call_</CODE> function. So the code for line 5 in the 
+      opening code listings is not compilable now. Though compiler can find a 
+      suitable <CODE><SPAN class=cpp-keyword>operator</SPAN>()</CODE> in the 
+      <CODE>Functor</CODE> template, it fails to find a suitable 
+      <CODE>call_</CODE> function in a corresponding <CODE>FunImplBase</CODE> 
+      specialization. But as you may notice, we've got back to the necessity of 
+      partial specializations - not for <CODE>Functor</CODE> template itself but 
+      for some helper classes. These are bad news. The good and more important 
+      ones are that the specializations contain as little unnecessary code 
+      (independent from count of arguments of <CODE>call_</CODE> function) as 
+      possible. Loki's implementation follows this way and achieves very good 
+      code factoring.</P>
+      <P>We've considered how generalized functor requirements and 
+      implementation detail issues (<B>R1</B>, <B>R2</B>, <B>D1</B> and 
+      <B>D2</B>) can be solved and how they are solved in the existing 
+      libraries. Requirement <B>R3</B> issues we'll leave untouched since they 
+      do not introduce any new ideas and are rather easy in the 
+      implementation.</P>
+      <H2>Going Forward</H2>
+      <P>In the previous section we've discussed generalized functor 
+      requirements, design problems and possible solutions. We've also got to a 
+      principle implementation usually used in the existing libraries. In this 
+      section we'll try to investigate and analyze its disadvantages and remove 
+      them.</P>
+      <P>One of the disadvantages which can be discovered from previous section 
+      examples is the need of heap allocation for <CODE>FunctorImpl</CODE> and 
+      <CODE>MemberFnImpl</CODE> instances. This is a squander - both from the 
+      point of view of speed and memory consumptions (because all 
+      general-purpose allocators allocate memory with some granularity wasting 
+      some space). Understanding this, Loki provides for its functor template 
+      the optimized custom small object allocator. Boost implementation also 
+      contains some tricks that allow to refuse heap allocation for generalized 
+      functors for non-member and member functions, but still rolls down to heap 
+      allocation with generalized functors in case of arbitrary functors.</P>
+      <P>How about refusing heap allocation for all cases? Possible solution is 
+      to incorporate a buffer of some fixed (but customizable) size into functor 
+      class template itself and use it as a pool for memory allocation. This 
+      idea exploits the fact that for all callable entity kinds, only few bytes 
+      of memory are needed to store internal data. Thus with a functor for a 
+      static function only function pointer (4 bytes on 32-bit systems) should 
+      be stored. With functor to member function a pointer to the target object 
+      instance and a pointer-to-member for a function to be called are needed. 
+      The former takes 4 bytes again, while the size of the latter can vary from 
+      4 to 20 bytes (see an excellent study here [5]). Internal data size for an 
+      arbitrary functor can't be predicted beforehand, but we know from our 
+      experience that functors are usually designed to have a few data members 
+      or without them at all.</P>
+      <P>This idea can be expressed in the following way:</P><PRE><SPAN class=cpp-keyword>template</SPAN> &lt;<SPAN class=cpp-keyword>class</SPAN> R, <SPAN class=cpp-keyword>class</SPAN> TList, <SPAN class=cpp-keyword>unsigned</SPAN> <SPAN class=cpp-keyword>int</SPAN> size = <SPAN class=cpp-literal>4</SPAN> * <SPAN class=cpp-keyword>sizeof</SPAN>(<SPAN class=cpp-keyword>void</SPAN>*)&gt; 
+<SPAN class=cpp-keyword>class</SPAN> Functor
+{
+  ...
+  <SPAN class=cpp-keyword>struct</SPAN> Typeless {
+    <SPAN class=cpp-keyword>char</SPAN> buffer_[size];
+    <SPAN class=cpp-keyword>template</SPAN> &lt;<SPAN class=cpp-keyword>class</SPAN> T, <SPAN class=cpp-keyword>class</SPAN> V&gt; T* init(V <SPAN class=cpp-keyword>const</SPAN>&amp; v) { <SPAN class=cpp-keyword>new</SPAN>(&amp;buffer[<SPAN class=cpp-literal>0</SPAN>]) T(v); }
+    <SPAN class=cpp-keyword>template</SPAN> &lt;<SPAN class=cpp-keyword>typename</SPAN> T&gt; <SPAN class=cpp-keyword>inline</SPAN> T <SPAN class=cpp-keyword>const</SPAN>&amp; get() 
+             <SPAN class=cpp-keyword>const</SPAN> { <SPAN class=cpp-keyword>return</SPAN> *<SPAN class=cpp-keyword>reinterpret_cast</SPAN>&lt;T <SPAN class=cpp-keyword>const</SPAN>*&gt;(&amp;buffer[<SPAN class=cpp-literal>0</SPAN>]); }
+    <SPAN class=cpp-keyword>template</SPAN> &lt;<SPAN class=cpp-keyword>typename</SPAN> T&gt; <SPAN class=cpp-keyword>inline</SPAN> T&amp; get() 
+             { <SPAN class=cpp-keyword>return</SPAN> *<SPAN class=cpp-keyword>reinterpret_cast</SPAN>&lt;T*&gt;(&amp;buffer[<SPAN class=cpp-literal>0</SPAN>]); }
+  }
+  Typeless val_;
+  FunImplBase&lt;R, TList&gt; *pimpl_;
+<SPAN class=cpp-keyword>public</SPAN>:
+  ...
+  <SPAN class=cpp-comment>// ctor for non-member functions and arbitrary functors</SPAN>
+  <SPAN class=cpp-keyword>template</SPAN> &lt;<SPAN class=cpp-keyword>typename</SPAN> F&gt; Functor(F <SPAN class=cpp-keyword>const</SPAN>&amp; fun) 
+  {
+    pimpl_ = val_.init&lt;FunctorImpl&lt;F&gt; &gt;(fun);
+  }
+  ...
+};</PRE>
+      <P>Functors designed in the above way, waste some space in the case of the 
+      least memory-consuming functors for static functions. But, firstly, when 
+      using heap allocation, some memory wastes occur anyway due to the 
+      allocation granularity. And, secondly, the profit is admirable - all 
+      functor operations involved in copy-by-value support (ctors, dtor, 
+      <CODE><SPAN class=cpp-keyword>operator</SPAN>=</CODE>) work with a giddy 
+      speed. These operations are intensively used in important generalized 
+      functor applications based on functor chaining and binding. </P>
+      <P>For remaining minority of cases when <CODE><SPAN 
+      class=cpp-keyword>sizeof</SPAN>(T) &gt; size</CODE> we should provide in 
+      <CODE>Typeless::init()</CODE> switching to normal allocator. The simplest 
+      way to do this is the following:</P><PRE><SPAN class=cpp-keyword>template</SPAN> &lt;<SPAN class=cpp-keyword>class</SPAN> R, <SPAN class=cpp-keyword>class</SPAN> TList, <SPAN class=cpp-keyword>unsigned</SPAN> <SPAN class=cpp-keyword>int</SPAN> size = <SPAN class=cpp-literal>4</SPAN> * <SPAN class=cpp-keyword>sizeof</SPAN>(<SPAN class=cpp-keyword>void</SPAN>*)&gt; 
+<SPAN class=cpp-keyword>class</SPAN> Functor
+{
+  ...
+  <SPAN class=cpp-keyword>struct</SPAN> Typeless {
+    <SPAN class=cpp-keyword>char</SPAN> buffer_[size];
+    <SPAN class=cpp-keyword>template</SPAN> &lt;<SPAN class=cpp-keyword>class</SPAN> T, <SPAN class=cpp-keyword>class</SPAN> V&gt; T* init(V <SPAN class=cpp-keyword>const</SPAN>&amp; v) { <SPAN class=cpp-keyword>new</SPAN>(&amp;buffer[<SPAN class=cpp-literal>0</SPAN>]) T(v); }
+    <SPAN class=cpp-keyword>template</SPAN> &lt;<SPAN class=cpp-keyword>typename</SPAN> T&gt; <SPAN class=cpp-keyword>inline</SPAN> T <SPAN class=cpp-keyword>const</SPAN>&amp; get() <SPAN class=cpp-keyword>const</SPAN> 
+             { <SPAN class=cpp-keyword>return</SPAN> *<SPAN class=cpp-keyword>reinterpret_cast</SPAN>&lt;T <SPAN class=cpp-keyword>const</SPAN>*&gt;(&amp;buffer[<SPAN class=cpp-literal>0</SPAN>]); }
+    <SPAN class=cpp-keyword>template</SPAN> &lt;<SPAN class=cpp-keyword>typename</SPAN> T&gt; <SPAN class=cpp-keyword>inline</SPAN> T&amp; get() 
+             { <SPAN class=cpp-keyword>return</SPAN> *<SPAN class=cpp-keyword>reinterpret_cast</SPAN>&lt;T*&gt;(&amp;buffer[<SPAN class=cpp-literal>0</SPAN>]); }
+  }
+  <SPAN class=cpp-keyword>template</SPAN> &lt;<SPAN class=cpp-keyword>typename</SPAN> T&gt;
+  <SPAN class=cpp-keyword>struct</SPAN> ByValue
+  {
+    <SPAN class=cpp-keyword>template</SPAN> &lt;<SPAN class=cpp-keyword>typename</SPAN> V&gt; <SPAN class=cpp-keyword>inline</SPAN> <SPAN class=cpp-keyword>static</SPAN> T* init(Typeless&amp; val, 
+             V <SPAN class=cpp-keyword>const</SPAN>&amp; v) { <SPAN class=cpp-keyword>return</SPAN> val.<SPAN class=cpp-keyword>template</SPAN> init&lt;T&gt;(v); }
+    <SPAN class=cpp-keyword>inline</SPAN> <SPAN class=cpp-keyword>static</SPAN> T <SPAN class=cpp-keyword>const</SPAN>&amp; get(Typeless <SPAN class=cpp-keyword>const</SPAN>&amp; val) { <SPAN class=cpp-keyword>return</SPAN> val.get&lt;T&gt;(); }
+    <SPAN class=cpp-keyword>inline</SPAN> <SPAN class=cpp-keyword>static</SPAN> T&amp; get(Typeless&amp; val) { <SPAN class=cpp-keyword>return</SPAN> val.get&lt;T&gt;(); }
+  };
+  <SPAN class=cpp-keyword>template</SPAN> &lt;<SPAN class=cpp-keyword>typename</SPAN> T&gt;
+  <SPAN class=cpp-keyword>struct</SPAN> NewAlloc
+  {
+    <SPAN class=cpp-keyword>template</SPAN> &lt;<SPAN class=cpp-keyword>typename</SPAN> V&gt; <SPAN class=cpp-keyword>inline</SPAN> <SPAN class=cpp-keyword>static</SPAN> T* init(Typeless&amp; val, 
+             V <SPAN class=cpp-keyword>const</SPAN>&amp; v) { <SPAN class=cpp-keyword>return</SPAN> *val.<SPAN class=cpp-keyword>template</SPAN> init&lt;T*&gt;(<SPAN class=cpp-keyword>new</SPAN> T(v)); }
+    <SPAN class=cpp-keyword>inline</SPAN> <SPAN class=cpp-keyword>static</SPAN> T <SPAN class=cpp-keyword>const</SPAN>&amp; get(Typeless <SPAN class=cpp-keyword>const</SPAN>&amp; val) 
+           { <SPAN class=cpp-keyword>return</SPAN> *val.get&lt;T <SPAN class=cpp-keyword>const</SPAN>*&gt;(); }
+    <SPAN class=cpp-keyword>inline</SPAN> <SPAN class=cpp-keyword>static</SPAN> T&amp; get(Typeless&amp; val) { <SPAN class=cpp-keyword>return</SPAN> *val.get&lt;T*&gt;(); }
+  };
+  <SPAN class=cpp-keyword>template</SPAN> &lt;<SPAN class=cpp-keyword>typename</SPAN> T&gt;
+  <SPAN class=cpp-keyword>struct</SPAN> SelectStored 
+  { 
+    <SPAN class=cpp-keyword>typedef</SPAN> <SPAN class=cpp-keyword>typename</SPAN> Select&lt;
+    <SPAN class=cpp-keyword>sizeof</SPAN>(T)&lt;=<SPAN class=cpp-keyword>sizeof</SPAN>(Typeless), 
+    ByValue&lt;T&gt;, 
+    NewAlloc&lt;T&gt; 
+    &gt;::Result Type;
+    <SPAN class=cpp-comment>// Select meta-template returns</SPAN>
+    <SPAN class=cpp-comment>// an appropriate type depending on its first argument</SPAN>
+  };
+  <SPAN class=cpp-keyword>struct</SPAN> Stored 
+  { 
+    <SPAN class=cpp-keyword>template</SPAN> &lt;<SPAN class=cpp-keyword>typename</SPAN> T, <SPAN class=cpp-keyword>typename</SPAN> V&gt; <SPAN class=cpp-keyword>inline</SPAN> T* init(V <SPAN class=cpp-keyword>const</SPAN>&amp; v) 
+             { <SPAN class=cpp-keyword>return</SPAN> SelectStored&lt;T&gt;::Type::init(val_, v); }
+    <SPAN class=cpp-keyword>template</SPAN> &lt;<SPAN class=cpp-keyword>typename</SPAN> T&gt; <SPAN class=cpp-keyword>inline</SPAN> T <SPAN class=cpp-keyword>const</SPAN>&amp; get() <SPAN class=cpp-keyword>const</SPAN> 
+             { <SPAN class=cpp-keyword>return</SPAN> SelectStored&lt;T&gt;::Type::get(val_); }
+    <SPAN class=cpp-keyword>template</SPAN> &lt;<SPAN class=cpp-keyword>typename</SPAN> T&gt; <SPAN class=cpp-keyword>inline</SPAN> T&amp; get() 
+             { <SPAN class=cpp-keyword>return</SPAN> SelectStored&lt;T&gt;::Type::get(val_); }
+    Typeless val_;
+  };
+  Stored val_;
+  FunImplBase *pimpl_;
+<SPAN class=cpp-keyword>public</SPAN>:
+  ...
+  <SPAN class=cpp-comment>// ctor for non-member functions and arbitrary functors</SPAN>
+  <SPAN class=cpp-keyword>template</SPAN> &lt;<SPAN class=cpp-keyword>typename</SPAN> F&gt; Functor(F <SPAN class=cpp-keyword>const</SPAN>&amp; fun) 
+  {
+    pimpl_ = val_.init&lt;FunctorImpl&lt;F&gt; &gt;(fun);
+  }
+  ...
+};</PRE>
+      <P>In the above code snippet, <CODE>val_</CODE> is used either to store 
+      the value of <CODE>T</CODE> entirely, or to store only the pointer to 
+      ordinarily new-allocated value. Note: <CODE><SPAN 
+      class=cpp-keyword>sizeof</SPAN>(T)&lt;=<SPAN 
+      class=cpp-keyword>sizeof</SPAN>(Typeless)</CODE> expression used in <CODE 
+      lang=text>Select</CODE> meta-template is not exact enough and should be 
+      improved by adding alignment calculations (see [6] or [3]).</P>
+      <P>Digging in we can discover one more disadvantage. It lies in that after 
+      introducing <CODE>val_</CODE>, <CODE>pimpl_</CODE> pointer becomes 
+      redundant! We always "almost" know it - it is equal either 
+      <CODE>&amp;val_</CODE> or incorporated into <CODE>val_</CODE> itself. So 
+      if we could make such a choice we could throw <CODE>pimpl_</CODE> away. 
+      Remember that each instance of a class containing virtual functions 
+      (either own or inherited ones) maintains an invisible pointer to the 
+      virtual methods table which directs virtual function calls toward the 
+      right function of the right class. If we could deal with it directly and 
+      take it out from <CODE>FunctorImpl</CODE> and <CODE>MemberFnImpl</CODE> 
+      instances into the <CODE>Functor</CODE> template, we could still make all 
+      needed calls to the right <CODE>FunctorImpl</CODE> or 
+      <CODE>MemberFnImpl</CODE> functions and additionally save 4 bytes! Of 
+      course we couldn't do it dealing with C++ virtual function mechanism 
+      immediately. But we could simulate this mechanism. This is a known and 
+      rather powerful technique (see [6] or [7] for example). For our case it 
+      could be applied in the following way:</P><PRE><SPAN class=cpp-keyword>template</SPAN> &lt;<SPAN class=cpp-keyword>class</SPAN> R, <SPAN class=cpp-keyword>class</SPAN> TList, <SPAN class=cpp-keyword>unsigned</SPAN> <SPAN class=cpp-keyword>int</SPAN> size = <SPAN class=cpp-literal>4</SPAN> * <SPAN class=cpp-keyword>sizeof</SPAN>(<SPAN class=cpp-keyword>void</SPAN>*)&gt; 
+<SPAN class=cpp-keyword>class</SPAN> Functor
+{
+  ...
+  <SPAN class=cpp-keyword>struct</SPAN> FunImplBase
+  {
+    <SPAN class=cpp-keyword>struct</SPAN> VTable
+    {
+      R (*call_)(Functor <SPAN class=cpp-keyword>const</SPAN>&amp;, ...params evaluated from TList...);
+      ...
+    };
+    <SPAN class=cpp-comment>// VTable vtbl_;</SPAN>
+  };
+  <SPAN class=cpp-keyword>template</SPAN> &lt;<SPAN class=cpp-keyword>typename</SPAN> F&gt;
+  <SPAN class=cpp-keyword>class</SPAN> FunctorImpl : <SPAN class=cpp-keyword>public</SPAN> FunImplBase
+  {
+    F fun_;
+  <SPAN class=cpp-keyword>public</SPAN>:
+    FunctorImpl(F <SPAN class=cpp-keyword>const</SPAN>&amp; fun) : fun_(fun) {}
+    <SPAN class=cpp-keyword>static</SPAN> R Call(Functor <SPAN class=cpp-keyword>const</SPAN>&amp; f, ...params evaluated from TList...) 
+    { 
+      FunctorImpl <SPAN class=cpp-keyword>const</SPAN>&amp; this_ = 
+         f.val_.<SPAN class=cpp-keyword>template</SPAN> get&lt;FunctorImpl <SPAN class=cpp-keyword>const</SPAN>&gt;();
+      ... use this_ and params to make a call to fun_ ... 
+    }
+    ...
+  };
+  <SPAN class=cpp-keyword>template</SPAN> &lt;<SPAN class=cpp-keyword>class</SPAN> P, <SPAN class=cpp-keyword>class</SPAN> MF&gt; 
+  <SPAN class=cpp-keyword>class</SPAN> MemberFnImpl : <SPAN class=cpp-keyword>public</SPAN> FunImplBase
+  {
+    P pobj_;
+    MF memfun_;
+  <SPAN class=cpp-keyword>public</SPAN>:
+    MemberFnImpl(P <SPAN class=cpp-keyword>const</SPAN>&amp; pobj, MF memfun) : pobj_(pobj), memfun_(fun) {}
+    <SPAN class=cpp-keyword>static</SPAN> R Call(Functor <SPAN class=cpp-keyword>const</SPAN>&amp; f, ...params evaluated from TList...) 
+    {
+      MemberFnImpl <SPAN class=cpp-keyword>const</SPAN>&amp; this_ = 
+         f.val_.<SPAN class=cpp-keyword>template</SPAN> get&lt;MemberFnImpl <SPAN class=cpp-keyword>const</SPAN>&gt;();
+      ... use this_ and params to make a call to memfun_ of pobj_ ... 
+    }
+    ...
+  };
+  ...
+  Stored val_;
+  <SPAN class=cpp-keyword>typename</SPAN> FunImplBase::VTable* vptr_;
+<SPAN class=cpp-keyword>public</SPAN>:
+  ...
+  <SPAN class=cpp-comment>// ctor for non-member functions and arbitrary functors </SPAN>
+  <SPAN class=cpp-keyword>template</SPAN> &lt;<SPAN class=cpp-keyword>typename</SPAN> F&gt; Functor(F <SPAN class=cpp-keyword>const</SPAN>&amp; fun) 
+  { 
+    FunImplBase* pimpl_ = val_.init&lt;FunctorImpl&lt;F&gt; &gt;(fun);
+    <SPAN class=cpp-comment>// throw away pimpl, we don't need it in this implementation</SPAN>
+    <SPAN class=cpp-keyword>static</SPAN> <SPAN class=cpp-keyword>typename</SPAN> FunImplBase::VTable vtbl =
+    {
+      &amp;FunctorImpl::Call,
+      ...
+    };
+    vptr_ = &amp;vtbl;
+  } 
+  R <SPAN class=cpp-keyword>operator</SPAN>(...params evaluated from TList...)
+  {
+    <SPAN class=cpp-keyword>return</SPAN> vptr_-&gt;call_(*<SPAN class=cpp-keyword>this</SPAN>, ...params evaluated from TList...);
+  }
+  ...
+};</PRE>
+      <P><I>Note: this is not a plane translation of the previous example with 
+      virtual functions, this is an adapted translation, e.g. pointer to 
+      <CODE>FunImplBase</CODE> is thrown away and is replaced by pointer to a 
+      function table, <CODE>FunctorImpl::Call</CODE> function etc. accepts 
+      <CODE>Functor</CODE> instance reference as first argument (not a 
+      <CODE>FunctorImpl</CODE> pointer that could be in plane translation).</I> 
+      The result seems to be acceptable.</P>
+      <P>Let's switch to <B>R2</B> and <B>D2</B> issues now. We can notice that 
+      when calling <CODE>FunctorImpl::Call</CODE> and 
+      <CODE>MemberFnImpl::Call</CODE> from <CODE><SPAN 
+      class=cpp-keyword>operator</SPAN>()</CODE>, all its arguments should 
+      always be copied. Because this is a call via a function pointer (as with 
+      virtual function call as well by the way), the compiler could not apply 
+      any optimizations. So what if we pack <CODE><SPAN 
+      class=cpp-keyword>operator</SPAN>()</CODE> arguments into a tuple and pass 
+      it to <CODE>FunctorImpl::Call</CODE> or <CODE>MemberFnImpl::Call</CODE>? 
+      Arguments copying overhead will remain the same, but 
+      <CODE>FunctorImpl</CODE> and <CODE>MemberFnImpl</CODE> could become 
+      independent from <CODE><SPAN class=cpp-keyword>operator</SPAN>()</CODE> 
+      arguments count. It is not shown in the previous listings but in addition 
+      to <CODE>Call</CODE> functions <CODE>FunctorImplBase</CODE>, 
+      <CODE>FunctorImpl</CODE> and <CODE>MemberFnImpl</CODE> should also contain 
+      functions for value semantics support. So their independence from 
+      <CODE><SPAN class=cpp-keyword>operator</SPAN>()</CODE> arguments count 
+      evidently improves the code:</P><PRE><SPAN class=cpp-keyword>template</SPAN> &lt;<SPAN class=cpp-keyword>class</SPAN> TList&gt; <SPAN class=cpp-keyword>struct</SPAN> CallParms;
+... partial specializations <SPAN class=cpp-keyword>for</SPAN> typelists with different length ... 
+<SPAN class=cpp-keyword>template</SPAN> &lt;<SPAN class=cpp-keyword>typename</SPAN> P1, <SPAN class=cpp-keyword>typename</SPAN> P2&gt; <SPAN class=cpp-keyword>struct</SPAN> CallParms&lt;TYPELIST_2(P1, P2)&gt; 
+{
+  <SPAN class=cpp-keyword>typedef</SPAN> InstantiateH&lt;tTYPELIST_2(P1, P2)&gt; ParmsListType;
+  <SPAN class=cpp-keyword>static</SPAN> <SPAN class=cpp-keyword>inline</SPAN> ParmsListType Make(P1 p1, P2 p2) 
+         { ... make ParmsListType tuple from p1 and p2 ... }
+};
+<SPAN class=cpp-keyword>template</SPAN> &lt;<SPAN class=cpp-keyword>typename</SPAN> CallType, <SPAN class=cpp-keyword>typename</SPAN> R, <SPAN class=cpp-keyword>class</SPAN> TList&gt; <SPAN class=cpp-keyword>struct</SPAN> FunctorCall;
+<SPAN class=cpp-comment>//... partial specializations for different numbers</SPAN>
+<SPAN class=cpp-comment>//    of arguments of the function types ... </SPAN>
+<SPAN class=cpp-keyword>template</SPAN> &lt;<SPAN class=cpp-keyword>typename</SPAN> CallType, <SPAN class=cpp-keyword>typename</SPAN> R, P1, P2&gt;
+<SPAN class=cpp-keyword>struct</SPAN> FunctorCall&lt;CallType, R, TYPELIST_2(P1, P2)&gt; 
+{
+  <SPAN class=cpp-keyword>typedef</SPAN> InstantiateH&lt;tTYPELIST_2(P1, P2)&gt; ParmsListType;
+  <SPAN class=cpp-keyword>template</SPAN> &lt;<SPAN class=cpp-keyword>class</SPAN> Fun&gt; <SPAN class=cpp-keyword>static</SPAN> <SPAN class=cpp-keyword>inline</SPAN> 
+           R Call(Fun <SPAN class=cpp-keyword>const</SPAN>&amp; fun, ParmsListType&amp; parms) 
+  { 
+    <SPAN class=cpp-keyword>return</SPAN> fun(... parameters unpacked from parms ...); 
+  }
+  <SPAN class=cpp-keyword>template</SPAN> &lt;<SPAN class=cpp-keyword>class</SPAN> PObj&gt; <SPAN class=cpp-keyword>static</SPAN> <SPAN class=cpp-keyword>inline</SPAN> R Call(PObj <SPAN class=cpp-keyword>const</SPAN>&amp; pobj, 
+           CallType memfun, ParmsListType&amp; parms) 
+  { 
+    <SPAN class=cpp-keyword>return</SPAN> ((*pobj).*memfun)(... parameters unpacked from parms ...); 
+  }
+};
+...
+<SPAN class=cpp-keyword>template</SPAN> &lt;<SPAN class=cpp-keyword>class</SPAN> R, <SPAN class=cpp-keyword>class</SPAN> TList, <SPAN class=cpp-keyword>unsigned</SPAN> <SPAN class=cpp-keyword>int</SPAN> size = <SPAN class=cpp-literal>4</SPAN> * <SPAN class=cpp-keyword>sizeof</SPAN>(<SPAN class=cpp-keyword>void</SPAN>*)&gt; 
+<SPAN class=cpp-keyword>class</SPAN> Functor
+{
+  ...
+  <SPAN class=cpp-keyword>typedef</SPAN> <SPAN class=cpp-keyword>typename</SPAN> CallParms&lt;TList&gt;::ParmsListType ParmsListType;
+  <SPAN class=cpp-keyword>struct</SPAN> FunImplBase
+  {
+    <SPAN class=cpp-keyword>struct</SPAN> VTable
+    {
+      R (*call_)(Functor <SPAN class=cpp-keyword>const</SPAN>&amp;, ParmsListType parms);
+      ...
+    };
+    <SPAN class=cpp-comment>// VTable vtbl_;</SPAN>
+  };
+  <SPAN class=cpp-keyword>template</SPAN> &lt;<SPAN class=cpp-keyword>typename</SPAN> F&gt;
+  <SPAN class=cpp-keyword>class</SPAN> FunctorImpl : <SPAN class=cpp-keyword>public</SPAN> FunImplBase
+  {
+    F fun_;
+  <SPAN class=cpp-keyword>public</SPAN>:
+    FunctorImpl(F <SPAN class=cpp-keyword>const</SPAN>&amp; fun) : fun_(fun) {}
+    <SPAN class=cpp-keyword>static</SPAN> R Call(Functor <SPAN class=cpp-keyword>const</SPAN>&amp; f, ParmsListType parms) 
+    { 
+      FunctorImpl <SPAN class=cpp-keyword>const</SPAN>&amp; this_ = 
+                  f.val_.<SPAN class=cpp-keyword>template</SPAN> get&lt;FunctorImpl <SPAN class=cpp-keyword>const</SPAN>&gt;();
+      <SPAN class=cpp-keyword>return</SPAN> FunctorCall&lt;T, R, TList&gt;::Call(this_.fun_, parms); 
+    }
+    ...
+  };
+  <SPAN class=cpp-keyword>template</SPAN> &lt;<SPAN class=cpp-keyword>class</SPAN> P, <SPAN class=cpp-keyword>class</SPAN> MF&gt; 
+  <SPAN class=cpp-keyword>class</SPAN> MemberFnImpl : <SPAN class=cpp-keyword>public</SPAN> FunImplBase
+  {
+    P pobj_;
+    MF memfun_;
+  <SPAN class=cpp-keyword>public</SPAN>:
+    MemberFnImpl(P <SPAN class=cpp-keyword>const</SPAN>&amp; pobj, MF memfun) : pobj_(pobj), memfun_(fun) {}
+    <SPAN class=cpp-keyword>static</SPAN> R Call(Functor <SPAN class=cpp-keyword>const</SPAN>&amp; f, ParmsListType parms) 
+    {
+      MemberFnImpl <SPAN class=cpp-keyword>const</SPAN>&amp; this_ = 
+                   f.val_.<SPAN class=cpp-keyword>template</SPAN> get&lt;MemberFnImpl <SPAN class=cpp-keyword>const</SPAN>&gt;();
+      <SPAN class=cpp-keyword>return</SPAN> FunctorCall&lt;T, R, TList&gt;::Call(this_.pobj_, 
+                                        this_.memfun_, parms); 
+    }
+    ...
+  };
+  ...
+  Stored val_;
+  <SPAN class=cpp-keyword>typename</SPAN> FunImplBase::VTable* vptr_;
+<SPAN class=cpp-keyword>public</SPAN>:
+  ...
+  <SPAN class=cpp-comment>// ctor for non-member functions and arbitrary functors </SPAN>
+  <SPAN class=cpp-keyword>template</SPAN> &lt;<SPAN class=cpp-keyword>typename</SPAN> F&gt; Functor(F <SPAN class=cpp-keyword>const</SPAN>&amp; fun) 
+  { 
+    FunImplBase* pimpl_ = val_.init&lt;FunctorImpl&lt;F&gt; &gt;(fun);
+    <SPAN class=cpp-comment>// throw away pimpl, we don't need it in this implementation</SPAN>
+    <SPAN class=cpp-keyword>static</SPAN> <SPAN class=cpp-keyword>typename</SPAN> FunImplBase::VTable vtbl =
+    {
+      &amp;FunctorImpl::Call,
+      ...
+    };
+    vptr_ = &amp;vtbl;
+  } 
+  ... evaluate Parm1 type from TList ...
+  ... evaluate Parm2 type from TList ...
+  ...
+  <SPAN class=cpp-keyword>inline</SPAN> R <SPAN class=cpp-keyword>operator</SPAN>()() <SPAN class=cpp-keyword>const</SPAN> 
+  { 
+    <SPAN class=cpp-keyword>return</SPAN> vptr_-&gt;call_(*<SPAN class=cpp-keyword>this</SPAN>, CallParms&lt;TList&gt;::Make());
+  }
+  <SPAN class=cpp-keyword>inline</SPAN> R <SPAN class=cpp-keyword>operator</SPAN>()(Parm1 p1) <SPAN class=cpp-keyword>const</SPAN> 
+  { 
+    <SPAN class=cpp-keyword>return</SPAN> vptr_-&gt;call_(*<SPAN class=cpp-keyword>this</SPAN>, CallParms&lt;TList&gt;::Make(p1));
+  }
+  <SPAN class=cpp-keyword>inline</SPAN> R <SPAN class=cpp-keyword>operator</SPAN>()(Parm1 p1, Parm2 p2) <SPAN class=cpp-keyword>const</SPAN> 
+  { 
+    <SPAN class=cpp-keyword>return</SPAN> vptr_-&gt;call_(*<SPAN class=cpp-keyword>this</SPAN>, CallParms&lt;TList&gt;::Make(p1, p2));
+  }
+  ...
+};</PRE>
+      <P><I>Note: in the above listing <CODE>InstantiateH</CODE> - is a kind of 
+      <CODE>GenScatterHierarchy&lt;&gt;</CODE> template in Loki used here as 
+      tuple generation engine (see [1] for details).</I></P>
+      <P>Packing <CODE><SPAN class=cpp-keyword>operator</SPAN>()</CODE> 
+      arguments into the tuple and passing it in internal calls can lead to 
+      additional benefits, that exceed the bounds of <CODE>Functor</CODE> 
+      implementation itself. E.g. we can add the following overloaded 
+      <CODE><SPAN class=cpp-keyword>operator</SPAN>()</CODE>:</P><PRE><SPAN class=cpp-keyword>template</SPAN> &lt;<SPAN class=cpp-keyword>class</SPAN> R, <SPAN class=cpp-keyword>class</SPAN> TList, <SPAN class=cpp-keyword>unsigned</SPAN> <SPAN class=cpp-keyword>int</SPAN> size = <SPAN class=cpp-literal>4</SPAN> * <SPAN class=cpp-keyword>sizeof</SPAN>(<SPAN class=cpp-keyword>void</SPAN>*)&gt; 
+<SPAN class=cpp-keyword>class</SPAN> Functor
+{
+  ... as above ...
+  <SPAN class=cpp-keyword>inline</SPAN> R <SPAN class=cpp-keyword>operator</SPAN>()(ParmsListType&amp; parms) <SPAN class=cpp-keyword>const</SPAN> 
+  { 
+    <SPAN class=cpp-keyword>return</SPAN> vptr_-&gt;call_(*<SPAN class=cpp-keyword>this</SPAN>, parms);
+  }
+};</PRE>
+      <P>and use it to pass <CODE>parms</CODE> reference around two or more 
+      functors. This can simplify implementation and even improve efficiency of 
+      functor chaining and binding support. We could even dream of named 
+      parameters in <CODE>Functor</CODE>'s <CODE><SPAN 
+      class=cpp-keyword>operator</SPAN>()</CODE> calls - the feature not 
+      supported by C++ for simple function-calls.</P>
+      <H2>Conclusions</H2>
+      <P>We've considered generalized functor requirements, existing 
+      implementation problems and disadvantages. Trying to solve them we've 
+      introduced several ideas, which being combined together, lead to the 
+      implementation that is rather different from known ones and seem to be 
+      more clear and efficient.</P>
+      <H2>References</H2>
+      <TABLE cellSpacing=2 cellPadding=0 border=0>
+        <TBODY>
+        <TR>
+          <TD>[1].</TD>
+          <TD>Modern C++ Design: Generic Programming and Design Patterns 
+            Applied (Addison-Wesley, 2001, ISBN 0201704315), 
+A.Alexandrescu</TD></TR>
+        <TR>
+          <TD><A href="http://sourceforge.net/projects/loki-lib" 
+            target=_blank>[2]</A>.</TD>
+          <TD>Loki Library Project</TD></TR>
+        <TR>
+          <TD><A href="http://www.boost.org/" target=_blank>[3]</A>.</TD>
+          <TD>boost Library Project Home</TD></TR>
+        <TR>
+          <TD><A href="http://www.cuj.com/documents/s=8464/cujcexp0308sutter/" 
+            target=_blank>[4]</A>.</TD>
+          <TD>Generalized Function Pointers, H.Sutter</TD></TR>
+        <TR>
+          <TD><A 
+            href="http://www.codeproject.com/cpp/FastDelegate.asp">[5]</A>.</TD>
+          <TD>Member Function Pointers and the Fastest Possible C++ Delegates, 
+            D.Clugston</TD></TR>
+        <TR>
+          <TD><A 
+            href="http://www.cuj.com/documents/s=7982/cujcexp2006alexandr/#2" 
+            target=_blank>[6]</A>.</TD>
+          <TD>Generic&lt;Programming&gt;: Discriminated Unions (II), 
+            A.Alexandrescu</TD></TR>
+        <TR>
+          <TD><A 
+            href="http://www.cuj.com/documents/s=7980/cujcexp2008alexandr/#1" 
+            target=_blank>[7]</A>.</TD>
+          <TD>Generic&lt;Programming&gt;: Discriminated Unions (III), 
+            A.Alexandrescu</TD></TR></TBODY></TABLE><!-- Article Ends --></DIV>
+      <H2>Aleksei Trunov</H2>
+      <TABLE width="100%" border=0>
+        <TBODY>
+        <TR vAlign=top>
+          <TD class=smallText noWrap><BR></TD>
+          <TD class=smallText width="100%">
+            <P class=smallText>Click <A 
+            href="http://www.codeproject.com/script/profile/whos_who.asp?vt=arts&amp;id=68533">here</A> 
+            to view Aleksei Trunov's online profile.</P></TD></TR></TBODY></TABLE><BR>
+      <TABLE cellPadding=4 width="100%" border=0>
+        <TBODY>
+        <TR vAlign=top>
+          <TD width="100%">
+            <H2>Other popular articles:</H2>
+            <UL>
+              <LI><A 
+              href="http://www.codeproject.com/cpp/exceptionhandler.asp">How a 
+              C++ compiler implements exception handling</A><BR><SPAN 
+              class=smalltext>An indepth discussion of how VC++ implements 
+              exception handling. Source code includes exception handling 
+              library for VC++.</SPAN>
+              <LI><A 
+              href="http://www.codeproject.com/cpp/rtl_scaling.asp">Scaling of 
+              memory intensive multi-threaded applications to SMMP 
+              computers</A><BR><SPAN class=smalltext>This article discusses 
+              impact of the multithreaded run-time library's memory manager on 
+              scaling memory-intensive server applications to Shared Memory 
+              Multiprocessor computers.</SPAN>
+              <LI><A 
+              href="http://www.codeproject.com/cpp/crafting_interpreter_p1.asp">Crafting 
+              an interpreter Part 1 - Parsing and Grammars</A><BR><SPAN 
+              class=smalltext>First of a series of articles on building a 
+              language interpreter, describing basics about parsing and 
+              grammars.</SPAN>
+              <LI><A 
+              href="http://www.codeproject.com/cpp/arguments.asp">Managing argc 
+              and argv[] with STL in a simple way</A><BR><SPAN 
+              class=smalltext>This class makes it very easy and unified to 
+              process the argument list of your main(). It provides many 
+              features to support options with parameters, optional parameters 
+              and automatic output of error messages and a short manual. It uses 
+              STL and is unicode compliant.</SPAN></LI></UL></TD>
+          <TD width=360>
+            <SCRIPT language=javascript>document.write("<IFRAME src=\"/script/admentor/include/ServeAdHTML.aspx?C=False&id=786\" border=0 frameborder=0 scrolling=no width=300 height=250></IFRAME>");</SCRIPT>
+          </TD></TR></TBODY></TABLE>
+      <FORM action=/script/rating/code/app/insert_vote.asp method=post><INPUT 
+      type=hidden value=functors/cpp6/11/2005 name=vote_name> <INPUT type=hidden 
+      value=/cpp/genfunctors.asp name=goal> 
+      <TABLE cellSpacing=0 cellPadding=1 width="100%" bgColor=#ff9900 
+        border=0><TBODY>
+        <TR>
+          <TD width="100%">
+            <TABLE cellSpacing=0 cellPadding=4 width="100%" bgColor=#fbedbb 
+            border=0>
+              <TBODY>
+              <TR>
+                <TD class=smalltext vAlign=center>[<A 
+                  href="http://www.codeproject.com/cpp/genfunctors.asp#__top">Top</A>]</TD>
+                <TD vAlign=center noWrap align=right><I><B>Rate this Article 
+                  for us!</B></I>&nbsp;&nbsp;&nbsp;&nbsp; <I>Poor</I><INPUT 
+                  type=radio value=1 name=rate><INPUT type=radio value=2 
+                  name=rate><INPUT type=radio value=3 name=rate><INPUT 
+                  type=radio value=4 name=rate><INPUT type=radio value=5 
+                  name=rate><I>Excellent</I>&nbsp;&nbsp;<INPUT class=FormButton type=submit value=Vote> 
+                </TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></FORM>
+      <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+        <TBODY>
+        <TR vAlign=top>
+          <TD vAlign=top>
+            <CENTER>
+            <SCRIPT language=javascript>document.write("<a href=\"/script/admentor/admentorredir.asp?id=544&way=ban\" target=_blank><img src=\"/script/admentor/include/ServeAd.aspx?File=%2Fscript%2Fadmentor%2Fimages%2Fdundas%5Fbluelogo%5F12060CP%2Egif&C=False&id=544\" alt=\"\" border=0 width=120 height=60></a>");</SCRIPT>
+            <BR><FONT size=1><A 
+            href="http://www.codeproject.com/info/MediaKit/">Premium 
+            Sponsor</A></FONT></CENTER><BR></TD>
+          <TD vAlign=top noWrap align=middle><SPAN id=AdBanner5>
+            <SCRIPT language=javascript>document.write("<a href=\"/script/admentor/admentorredir.asp?id=226&way=ban\" target=_blank><img src=\"/script/admentor/include/ServeAd.aspx?File=%2Fscript%2Fadmentor%2Fimages%2Fbcg%5Fbanner2004%2Egif&C=False&id=226\" alt=\"Business Components Gallery Pro - Windows GUI solutions.\" border=0 width=468 height=60></a>");</SCRIPT>
+            </SPAN></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE><A 
+name=__comments></A>
+<SCRIPT language=JavaScript>
+function MsgVoteForm(UserID, MsgID)
+{
+	document.write("Rate this message: ");
+	for (var i=1; i<=5;i++)
+		document.write("<a href='#xx" + MsgID.toString() + "xx' title='give this message a vote of " + i.toString() + "' onclick='RateMsg(" + UserID.toString() + ", " + MsgID.toString() + ", " + i.toString() + ")'><b>" + i.toString() + "</b></a> ");
+	document.write(" (out of 5)");
+}
+
+function RateMsg(userid, msgid, score) 
+{ 
+	open("/script/comments/vote.asp?js=1&user="+userid.toString()+"&msg="+msgid.toString()+"&score="+score.toString() ,"helpful","toolbar=no,resizable=yes,scrollbars=yes,directories=no,menubar=no,width=300,height=200");
+	return false;
+}
+</SCRIPT>
+
+<SCRIPT language=JavaScript>
+var Selected = "";
+var AdTime = new Date();
+
+function SwitchMessage(elm)
+{
+	
+	var elmref;
+	if (Selected != "")
+	{
+		elmref = eval("document.getElementById('" + Selected + "_h1')");
+		if (elmref) elmref.style.display = 'none';
+		elmref = eval("document.getElementById('" + Selected + "_h0')");
+		if (elmref) elmref.bgColor = '#FEF9E7';
+	}
+	if (Selected != elm.name) 
+	{
+		Selected = elm.name;
+		elmref = eval("document.getElementById('" + Selected + "_h1')");
+		if (elmref) 
+		{
+			if (elmref.style.display=='none') elmref.style.display='';
+			else elmref.style.display = 'none';
+		}
+		elmref = eval("document.getElementById('" + Selected + "_h0')");
+		if (elmref) 
+			elmref.bgColor = '#99CCFF';
+	}
+	else
+		Selected="";
+		
+	window.location = "#xx" + Selected + "xx";
+
+	return false;
+}
+
+</SCRIPT>
+
+<SCRIPT language=javascript event=onclick for=DynMessLink>
+return SwitchMessage(this);
+</SCRIPT>
+
+<TABLE cellSpacing=0 cellPadding=0 width="100%" bgColor=#ff9900 border=0>
+  <TBODY>
+  <TR>
+    <TD width="100%">
+      <TABLE id=ForumTable cellSpacing=1 cellPadding=0 width="100%" 
+      bgColor=#ff9900 border=0>
+        <FORM 
+        action=/script/comments/app/do_filtermessages.asp?main=/cpp/genfunctors.asp&amp;df=100&amp;forumid=189276 
+        method=post>
+        <TBODY>
+        <TR>
+          <TD>
+            <TABLE cellSpacing=0 cellPadding=3 width="100%" bgColor=white 
+            border=0>
+              <TBODY>
+              <TR bgColor=#fbedbb>
+                <TD class=smalltext noWrap><A 
+                  href="http://www.codeproject.com/script/comments/faq.asp"><IMG 
+                  height=16 src="Generalized Functors_files/info.gif" width=16 
+                  align=absMiddle border=0> <B>FAQ</B></A>&nbsp;</TD>
+                <TD class=smalltext vAlign=top noWrap align=right>Noise level 
+                  <SELECT class=smalltext size=1 name=noise><OPTION 
+                    value=1>Very High</OPTION> <OPTION value=2>High</OPTION> 
+                    <OPTION value=3 selected>Medium</OPTION> <OPTION 
+                    value=4>Low</OPTION> <OPTION value=5>Very 
+                  low</OPTION></SELECT>&nbsp;&nbsp;</TD>
+                <TD class=smalltext vAlign=center noWrap align=right 
+                  colSpan=2><A 
+                  href="http://www.codeproject.com/script/comments/search_comments.asp?forumid=189276"><IMG 
+                  height=15 src="Generalized Functors_files/search.gif" width=16 
+                  border=0> Search comments</A> &nbsp;</TD>
+                <TD vAlign=top align=right><INPUT class=FormButton type=submit value="Set Options" name=submit></TD></TR>
+              <TR bgColor=#ff9900>
+                <TD width="100%">&nbsp;</TD>
+                <TD class=smalltext vAlign=top noWrap align=right>View <SELECT 
+                  class=smalltext size=1 name=expand><OPTION value=0>Normal 
+                    (slow)</OPTION> <OPTION value=2>Preview (slow)</OPTION> 
+                    <OPTION value=5 selected>Message View</OPTION> <OPTION 
+                    value=6>Topic View</OPTION> <OPTION value=1>Thread 
+                    View</OPTION> <OPTION value=3>Expanded (Supporters 
+                    only)</OPTION></SELECT>&nbsp;&nbsp;</TD>
+                <TD class=smalltext vAlign=top noWrap>Per page <SELECT 
+                  class=smalltext size=1 name=perpage><OPTION 
+                    value=10>10</OPTION> <OPTION value=25 selected>25</OPTION> 
+                    <OPTION value=50>50</OPTION></SELECT></TD>
+                <TD colSpan=2>&nbsp;</TD></TR></TBODY></TABLE></TD></TR></FORM>
+        <TR bgColor=#fbedbb>
+          <TD><A name=xx0xx></A>
+            <TABLE cellPadding=2 width="100%" bgColor=#fbedbb border=0>
+              <TBODY>
+              <TR>
+                <TD class=messagetitle><A class=HoverLink 
+                  title="Add a new message to the discussions" 
+                  href="http://www.codeproject.com/script/comments/user_new.asp?main=/cpp/genfunctors.asp&amp;df=100&amp;forumid=189276" 
+                  target=_top name=HoverNL><B><IMG height=16 
+                  src="Generalized Functors_files/admin_modify.gif" width=16 
+                  align=top border=0> New thread</B></A></TD>
+                <TD class=messagetitle>Msgs 1 to 6 of 6 (Total: 6) (<A 
+                  href="http://www.codeproject.com/cpp/genfunctors.asp?df=100&amp;forumid=189276">Refresh</A>)</TD>
+                <TD noWrap align=right><FONT class=messagetitle><SPAN 
+                  class=HoverLink>First</SPAN> <SPAN class=HoverLink>Prev</SPAN> 
+                  <SPAN class=HoverLink>Next</SPAN> <SPAN 
+                  class=HoverLink>&nbsp;&nbsp;&nbsp;&nbsp;</SPAN> 
+              </FONT></TD></TR></TBODY></TABLE></TD></TR>
+        <TR bgColor=white>
+          <TD>
+            <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+              <TBODY>
+              <TR>
+                <TD width="100%">
+                  <TABLE cellSpacing=0 cellPadding=2 bgColor=#fbedbb border=0>
+                    <TBODY>
+                    <TR>
+                      <TD class=messagetitle width="100%">Subject&nbsp;</TD>
+                      <TD class=messagetitle noWrap width=140>Author&nbsp;</TD>
+                      <TD style="WIDTH: 9em" noWrap align=right 
+                        width=120><FONT 
+                    class=messagetitle>Date&nbsp;</FONT></TD></TR></TBODY></TABLE></TD></TR>
+              <TR>
+                <TD><IMG height=5 src="Generalized Functors_files/t.gif" 
+                  width=1 border=0></TD></TR>
+              <TR id=1141015_h0 bgColor=#fef9e7>
+                <TD width="100%">
+                  <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+                    <TBODY>
+                    <TR>
+                      <TD bgColor=white><A name=xx1141015xx></A><IMG 
+                        src="Generalized Functors_files/news_unselected.gif" 
+                        align=absMiddle>&nbsp;</TD>
+                      <TD class=messagetitle width="100%"><A 
+                        class=messagetitle id=DynMessLink 
+                        href="http://www.codeproject.com/cpp/genfunctors.asp?df=100&amp;forumid=189276&amp;select=1141015#xx1141015xx" 
+                        name=1141015><B>Some interesting ideas here.</B></A></TD>
+                      <TD vAlign=bottom><A 
+                        href="http://www.codeproject.com/script/profile/whos_who.asp?id=88370"><IMG 
+                        title="Click for User Profile" height=15 
+                        src="Generalized Functors_files/userinfo.gif" width=14 
+                        border=0></A>&nbsp;</TD>
+                      <TD noWrap width=140><FONT class=messagetitle><B>Don 
+                        Clugston</B>&nbsp;</FONT></TD>
+                      <TD style="WIDTH: 9em" noWrap align=right 
+                        width=120><FONT class=messagetitle><B>21:15 20 Jun 
+                        '05</B>&nbsp;</FONT></TD></TR></TBODY></TABLE></TD></TR>
+              <TR id=1141015_h1 style="DISPLAY: none">
+                <TD width="100%">
+                  <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+                    <TBODY>
+                    <TR>
+                      <TD><IMG src="Generalized Functors_files/news_none.gif" 
+                        align=absMiddle>&nbsp;</TD>
+                      <TD width="100%" bgColor=#d5eaff>
+                        <TABLE cellSpacing=5 cellPadding=0 width="100%" 
+border=0>
+                          <TBODY>
+                          <TR>
+                            <TD>
+                              <TABLE cellSpacing=0 cellPadding=0 width="100%" 
+                              border=0>
+                                <TBODY>
+                                <TR>
+                                <TD colSpan=2><FONT 
+                                class=messagecontent>&gt;Internal data size for 
+                                an arbitrary functor can't be predicted 
+                                beforehand, but we know from our experience that 
+                                functors are usually designed to have a few data 
+                                members or without them at all.<BR><BR>This is a 
+                                really interesting observation. My belief is 
+                                that &gt;90% of usage of functors is with simple 
+                                member functions with no argument binding. But 
+                                the small functor, simple binding case probably 
+                                takes you up to 99% of practical cases. 
+                                <BR><BR>&gt; Boost implementation also contains 
+                                some tricks that allow to refuse heap allocation 
+                                for generalized functors for non-member and 
+                                member functions, but still rolls down to heap 
+                                allocation with generalized functors in case of 
+                                arbitrary functors.<BR><BR>Are you sure about 
+                                this? It is not true of the current version 
+                                (1.32) of boost::function, although I haven't 
+                                checked the latest CVS.<BR><BR>I'm not sure that 
+                                it can be done without *some* reliance on 
+                                undefined behaviour. Although it is possible to 
+                                create member function pointers onto a char 
+                                array using placement new, there are alignment 
+                                issues on some processors, and even when it 
+                                works, you are still relying on undefined 
+                                behaviour. At least in every implementation that 
+                                I've seen.<BR><BR><BR>&nbsp;</FONT></TD></TR>
+                                <TR vAlign=top>
+                                <TD class=messagetitle>[<A 
+                                title="Reply to this current thread" 
+                                href="http://www.codeproject.com/script/comments/user_reply.asp?main=/cpp/genfunctors.asp&amp;df=100&amp;forumid=189276&amp;select=1141015">Reply</A>][<A 
+                                title="Email a reply to the author of this message" 
+                                href="http://www.codeproject.com/script/comments/user_mail.asp?main=/cpp/genfunctors.asp&amp;df=100&amp;forumid=189276&amp;select=1141015">Email</A>][<A 
+                                title="View only messages within this thread" 
+                                href="http://www.codeproject.com/cpp/genfunctors.asp?df=100&amp;tid=1141015&amp;forumid=189276&amp;select=1141015#xx1141015xx">View 
+                                Thread</A>][<A 
+                                title="Get the URL for this message" 
+                                href="http://www.codeproject.com/cpp/genfunctors.asp?msg=1141015#xx1141015xx">Get 
+                                Link</A>]</TD>
+                                <TD class=messagetitle align=right>[<A 
+                                href="http://www.codeproject.com/script/comments/owner_modify_pw.asp?main=/cpp/genfunctors.asp&amp;df=100&amp;forumid=189276&amp;select=1141015"><I>Modify</I></A>|<A 
+                                href="http://www.codeproject.com/script/comments/owner_delete_pw.asp?main=/cpp/genfunctors.asp&amp;df=100&amp;forumid=189276&amp;select=1141015"><I>Delete</I></A>]<BR>
+                                <SCRIPT language=Javascript>MsgVoteForm(88370,1141015);</SCRIPT>
+                                </TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR>
+              <TR>
+                <TD><IMG height=6 src="Generalized Functors_files/t.gif" 
+                  width=1 border=0></TD></TR>
+              <TR id=1143525_h0 bgColor=#fef9e7>
+                <TD width="100%">
+                  <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+                    <TBODY>
+                    <TR>
+                      <TD bgColor=white><A name=xx1143525xx></A><IMG height=1 
+                        src="Generalized Functors_files/ind.gif" width=18><IMG 
+                        src="Generalized Functors_files/news_unselected.gif" 
+                        align=absMiddle>&nbsp;</TD>
+                      <TD class=messagetitle width="100%"><A 
+                        class=messagetitle id=DynMessLink 
+                        href="http://www.codeproject.com/cpp/genfunctors.asp?df=100&amp;forumid=189276&amp;select=1143525#xx1143525xx" 
+                        name=1143525>Re: Some interesting ideas here.</A></TD>
+                      <TD vAlign=bottom><A 
+                        href="http://www.codeproject.com/script/profile/whos_who.asp?id=68533"><IMG 
+                        title="Click for User Profile" height=15 
+                        src="Generalized Functors_files/userinfo.gif" width=14 
+                        border=0></A>&nbsp;</TD>
+                      <TD noWrap width=140><FONT class=messagetitle>Aleksei 
+                        Trunov&nbsp;</FONT></TD>
+                      <TD style="WIDTH: 9em" noWrap align=right 
+                        width=120><FONT class=messagetitle>17:55 22 Jun 
+                        '05&nbsp;</FONT></TD></TR></TBODY></TABLE></TD></TR>
+              <TR id=1143525_h1 style="DISPLAY: none">
+                <TD width="100%">
+                  <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+                    <TBODY>
+                    <TR>
+                      <TD><IMG height=1 
+                        src="Generalized Functors_files/ind.gif" width=18><IMG 
+                        src="Generalized Functors_files/news_none.gif" 
+                        align=absMiddle>&nbsp;</TD>
+                      <TD width="100%" bgColor=#d5eaff>
+                        <TABLE cellSpacing=5 cellPadding=0 width="100%" 
+border=0>
+                          <TBODY>
+                          <TR>
+                            <TD>
+                              <TABLE cellSpacing=0 cellPadding=0 width="100%" 
+                              border=0>
+                                <TBODY>
+                                <TR>
+                                <TD colSpan=2><FONT class=messagecontent>&gt; 
+                                Are you sure about this? It is not true of the 
+                                current version (1.32) of boost::function, 
+                                although I haven't checked the latest 
+                                CVS.<BR><BR>Thank you for the comment, i've 
+                                rechecked boost sources and should say that it 
+                                uses new allocation in case of member functions 
+                                too. There is no new allocation only in the case 
+                                of non-member functions. i'll fix this in the 
+                                article.<BR><BR>&gt; I'm not sure that it can be 
+                                done without *some* reliance on undefined 
+                                behaviour. Although it is possible to create 
+                                member function pointers onto a char array using 
+                                placement new, there are alignment issues on 
+                                some processors, and even when it works, you are 
+                                still relying on undefined behaviour. At least 
+                                in every implementation that I've 
+                                seen.<BR><BR>Surely alignment issues should be 
+                                considered and i know there are well-done 
+                                alignment calculation implementations (that can 
+                                be found in boost or Alexandrescu articles). 
+                                Sorry, i was too busy/lasy to add them and 
+                                leaved this as TODO. As to undefined behaviour - 
+                                do you mean undefined behaviour that may occur 
+                                after certain pointer to function or pointer to 
+                                member function conversions? 
+                                <BR><BR><BR>&nbsp;</FONT></TD></TR>
+                                <TR vAlign=top>
+                                <TD class=messagetitle>[<A 
+                                title="Reply to this current thread" 
+                                href="http://www.codeproject.com/script/comments/user_reply.asp?main=/cpp/genfunctors.asp&amp;df=100&amp;forumid=189276&amp;select=1143525">Reply</A>][<A 
+                                title="Email a reply to the author of this message" 
+                                href="http://www.codeproject.com/script/comments/user_mail.asp?main=/cpp/genfunctors.asp&amp;df=100&amp;forumid=189276&amp;select=1143525">Email</A>][<A 
+                                title="View only messages within this thread" 
+                                href="http://www.codeproject.com/cpp/genfunctors.asp?df=100&amp;tid=1141015&amp;forumid=189276&amp;select=1143525#xx1143525xx">View 
+                                Thread</A>][<A 
+                                title="Get the URL for this message" 
+                                href="http://www.codeproject.com/cpp/genfunctors.asp?msg=1143525#xx1143525xx">Get 
+                                Link</A>]</TD>
+                                <TD class=messagetitle align=right>[<A 
+                                href="http://www.codeproject.com/script/comments/owner_modify_pw.asp?main=/cpp/genfunctors.asp&amp;df=100&amp;forumid=189276&amp;select=1143525"><I>Modify</I></A>|<A 
+                                href="http://www.codeproject.com/script/comments/owner_delete_pw.asp?main=/cpp/genfunctors.asp&amp;df=100&amp;forumid=189276&amp;select=1143525"><I>Delete</I></A>]<BR>
+                                <SCRIPT language=Javascript>MsgVoteForm(68533,1143525);</SCRIPT>
+                                </TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR>
+              <TR>
+                <TD><IMG height=5 src="Generalized Functors_files/t.gif" 
+                  width=1 border=0></TD></TR>
+              <TR height=1>
+                <TD bgColor=#ff9900><IMG height=1 
+                  src="Generalized Functors_files/t.gif" width=1></TD></TR>
+              <TR id=1134888_h0 bgColor=#fef9e7>
+                <TD width="100%">
+                  <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+                    <TBODY>
+                    <TR>
+                      <TD bgColor=white><A name=xx1134888xx></A><IMG 
+                        src="Generalized Functors_files/news_unselected.gif" 
+                        align=absMiddle>&nbsp;</TD>
+                      <TD class=messagetitle width="100%"><A 
+                        class=messagetitle id=DynMessLink 
+                        href="http://www.codeproject.com/cpp/genfunctors.asp?df=100&amp;forumid=189276&amp;select=1134888#xx1134888xx" 
+                        name=1134888><B>Nice</B></A></TD>
+                      <TD vAlign=bottom><A 
+                        href="http://www.codeproject.com/script/profile/whos_who.asp?id=47096"><IMG 
+                        title="Click for User Profile" height=15 
+                        src="Generalized Functors_files/userinfo.gif" width=14 
+                        border=0></A>&nbsp;</TD>
+                      <TD noWrap width=140><FONT class=messagetitle><B>Alex 
+                        Mol</B>&nbsp;</FONT></TD>
+                      <TD style="WIDTH: 9em" noWrap align=right 
+                        width=120><FONT class=messagetitle><B>2:44 14 Jun 
+                        '05</B>&nbsp;</FONT></TD></TR></TBODY></TABLE></TD></TR>
+              <TR id=1134888_h1 style="DISPLAY: none">
+                <TD width="100%">
+                  <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+                    <TBODY>
+                    <TR>
+                      <TD><IMG src="Generalized Functors_files/news_none.gif" 
+                        align=absMiddle>&nbsp;</TD>
+                      <TD width="100%" bgColor=#d5eaff>
+                        <TABLE cellSpacing=5 cellPadding=0 width="100%" 
+border=0>
+                          <TBODY>
+                          <TR>
+                            <TD>
+                              <TABLE cellSpacing=0 cellPadding=0 width="100%" 
+                              border=0>
+                                <TBODY>
+                                <TR>
+                                <TD colSpan=2><FONT class=messagecontent>It's a 
+                                good article, but... As i understand the 
+                                underlying idea is to have a delphi like 
+                                delegates. But all solutions i saw before and 
+                                this one is too complex to be the standard way. 
+                                I guess it must be compiler support to be the 
+                                really common way of callbacks in C++. 
+                                <BR>&nbsp;</FONT></TD></TR>
+                                <TR vAlign=top>
+                                <TD class=messagetitle>[<A 
+                                title="Reply to this current thread" 
+                                href="http://www.codeproject.com/script/comments/user_reply.asp?main=/cpp/genfunctors.asp&amp;df=100&amp;forumid=189276&amp;select=1134888">Reply</A>][<A 
+                                title="Email a reply to the author of this message" 
+                                href="http://www.codeproject.com/script/comments/user_mail.asp?main=/cpp/genfunctors.asp&amp;df=100&amp;forumid=189276&amp;select=1134888">Email</A>][<A 
+                                title="View only messages within this thread" 
+                                href="http://www.codeproject.com/cpp/genfunctors.asp?df=100&amp;tid=1134888&amp;forumid=189276&amp;select=1134888#xx1134888xx">View 
+                                Thread</A>][<A 
+                                title="Get the URL for this message" 
+                                href="http://www.codeproject.com/cpp/genfunctors.asp?msg=1134888#xx1134888xx">Get 
+                                Link</A>]</TD>
+                                <TD class=messagetitle align=right>[<A 
+                                href="http://www.codeproject.com/script/comments/owner_modify_pw.asp?main=/cpp/genfunctors.asp&amp;df=100&amp;forumid=189276&amp;select=1134888"><I>Modify</I></A>|<A 
+                                href="http://www.codeproject.com/script/comments/owner_delete_pw.asp?main=/cpp/genfunctors.asp&amp;df=100&amp;forumid=189276&amp;select=1134888"><I>Delete</I></A>]<BR>
+                                <SCRIPT language=Javascript>MsgVoteForm(47096,1134888);</SCRIPT>
+                                </TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR>
+              <TR>
+                <TD><IMG height=6 src="Generalized Functors_files/t.gif" 
+                  width=1 border=0></TD></TR>
+              <TR id=1135292_h0 bgColor=#fef9e7>
+                <TD width="100%">
+                  <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+                    <TBODY>
+                    <TR>
+                      <TD bgColor=white><A name=xx1135292xx></A><IMG height=1 
+                        src="Generalized Functors_files/ind.gif" width=18><IMG 
+                        src="Generalized Functors_files/news_unselected.gif" 
+                        align=absMiddle>&nbsp;</TD>
+                      <TD class=messagetitle width="100%"><A 
+                        class=messagetitle id=DynMessLink 
+                        href="http://www.codeproject.com/cpp/genfunctors.asp?df=100&amp;forumid=189276&amp;select=1135292#xx1135292xx" 
+                        name=1135292>Re: Nice</A></TD>
+                      <TD vAlign=bottom><IMG height=13 
+                        alt="Unconfirmed/Anonymous posting" 
+                        src="Generalized Functors_files/usersuss.gif" 
+                        width=15></A>&nbsp;</TD>
+                      <TD noWrap width=140><FONT 
+                        class=messagetitle>Anonymous&nbsp;</FONT></TD>
+                      <TD style="WIDTH: 9em" noWrap align=right 
+                        width=120><FONT class=messagetitle>9:36 14 Jun 
+                        '05&nbsp;</FONT></TD></TR></TBODY></TABLE></TD></TR>
+              <TR id=1135292_h1 style="DISPLAY: none">
+                <TD width="100%">
+                  <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+                    <TBODY>
+                    <TR>
+                      <TD><IMG height=1 
+                        src="Generalized Functors_files/ind.gif" width=18><IMG 
+                        src="Generalized Functors_files/news_none.gif" 
+                        align=absMiddle>&nbsp;</TD>
+                      <TD width="100%" bgColor=#d5eaff>
+                        <TABLE cellSpacing=5 cellPadding=0 width="100%" 
+border=0>
+                          <TBODY>
+                          <TR>
+                            <TD>
+                              <TABLE cellSpacing=0 cellPadding=0 width="100%" 
+                              border=0>
+                                <TBODY>
+                                <TR>
+                                <TD colSpan=2><FONT class=messagecontent>I have 
+                                no definite opinion on the need of compiler 
+                                (language) support for delegates in C++. I'm not 
+                                interested much in this very problem actually. 
+                                Yes, i used an implement-a-delegate-like code as 
+                                an introductory example in the article, but only 
+                                because this is probably the most simple and 
+                                easy to understand and use application of 
+                                generalized functors. The underlying idea is 
+                                much wider. See [1] for very interesting 
+                                generalized functors application examples. 
+                                Imagine functors used to make deferred, 
+                                asynchronous, remote, rebound to another 
+                                parameters set calls. All of this can be done 
+                                without generalized functors, of course. But 
+                                generalized functors may introduce many 
+                                important additional benefits. They raise the 
+                                level of abstaction you deal with (not 
+                                compromising efficiency in most cases). They are 
+                                ready to various generic programming techniques. 
+                                They are very handy and can easily serve as a 
+                                glue for _all_ function-call-related stuff. And 
+                                as a result they help to produce better code, in 
+                                all senses programmers usually put in that two 
+                                words. <BR>As to complexity in implementation, 
+                                it is, oh really, too complex thing to discuss 
+                                <IMG 
+                                src="Generalized Functors_files/smiley_smile.gif" 
+                                align=absMiddle> Do you think std::map is 
+                                complex for example? <BR>&nbsp;</FONT></TD></TR>
+                                <TR vAlign=top>
+                                <TD class=messagetitle>[<A 
+                                title="Reply to this current thread" 
+                                href="http://www.codeproject.com/script/comments/user_reply.asp?main=/cpp/genfunctors.asp&amp;df=100&amp;forumid=189276&amp;select=1135292">Reply</A>][<A 
+                                title="View only messages within this thread" 
+                                href="http://www.codeproject.com/cpp/genfunctors.asp?df=100&amp;tid=1134888&amp;forumid=189276&amp;select=1135292#xx1135292xx">View 
+                                Thread</A>][<A 
+                                title="Get the URL for this message" 
+                                href="http://www.codeproject.com/cpp/genfunctors.asp?msg=1135292#xx1135292xx">Get 
+                                Link</A>]</TD>
+                                <TD class=messagetitle align=right>[<A 
+                                href="http://www.codeproject.com/script/comments/owner_modify_pw.asp?main=/cpp/genfunctors.asp&amp;df=100&amp;forumid=189276&amp;select=1135292"><I>Modify</I></A>|<A 
+                                href="http://www.codeproject.com/script/comments/owner_delete_pw.asp?main=/cpp/genfunctors.asp&amp;df=100&amp;forumid=189276&amp;select=1135292"><I>Delete</I></A>]<BR>
+                                <SCRIPT language=Javascript>MsgVoteForm(0,1135292);</SCRIPT>
+                                </TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR>
+              <TR>
+                <TD><IMG height=6 src="Generalized Functors_files/t.gif" 
+                  width=1 border=0></TD></TR>
+              <TR id=1135306_h0 bgColor=#fef9e7>
+                <TD width="100%">
+                  <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+                    <TBODY>
+                    <TR>
+                      <TD bgColor=white><A name=xx1135306xx></A><IMG height=1 
+                        src="Generalized Functors_files/ind.gif" width=36><IMG 
+                        src="Generalized Functors_files/news_unselected.gif" 
+                        align=absMiddle>&nbsp;</TD>
+                      <TD class=messagetitle width="100%"><A 
+                        class=messagetitle id=DynMessLink 
+                        href="http://www.codeproject.com/cpp/genfunctors.asp?df=100&amp;forumid=189276&amp;select=1135306#xx1135306xx" 
+                        name=1135306>Re: Nice</A></TD>
+                      <TD vAlign=bottom><A 
+                        href="http://www.codeproject.com/script/profile/whos_who.asp?id=68533"><IMG 
+                        title="Click for User Profile" height=15 
+                        src="Generalized Functors_files/userinfo.gif" width=14 
+                        border=0></A>&nbsp;</TD>
+                      <TD noWrap width=140><FONT class=messagetitle>Aleksei 
+                        Trunov&nbsp;</FONT></TD>
+                      <TD style="WIDTH: 9em" noWrap align=right 
+                        width=120><FONT class=messagetitle>9:48 14 Jun 
+                        '05&nbsp;</FONT></TD></TR></TBODY></TABLE></TD></TR>
+              <TR id=1135306_h1 style="DISPLAY: none">
+                <TD width="100%">
+                  <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+                    <TBODY>
+                    <TR>
+                      <TD><IMG height=1 
+                        src="Generalized Functors_files/ind.gif" width=36><IMG 
+                        src="Generalized Functors_files/news_none.gif" 
+                        align=absMiddle>&nbsp;</TD>
+                      <TD width="100%" bgColor=#d5eaff>
+                        <TABLE cellSpacing=5 cellPadding=0 width="100%" 
+border=0>
+                          <TBODY>
+                          <TR>
+                            <TD>
+                              <TABLE cellSpacing=0 cellPadding=0 width="100%" 
+                              border=0>
+                                <TBODY>
+                                <TR>
+                                <TD colSpan=2><FONT class=messagecontent>&gt; I 
+                                have no definite opinion on the need of compiler 
+                                (language) support for delegates in C++. I'm not 
+                                interested much in this very problem actually. 
+                                Yes, i used <BR>...<BR>Sorry, it was my posting, 
+                                i've forgot to log in... 
+                                <BR>&nbsp;</FONT></TD></TR>
+                                <TR vAlign=top>
+                                <TD class=messagetitle>[<A 
+                                title="Reply to this current thread" 
+                                href="http://www.codeproject.com/script/comments/user_reply.asp?main=/cpp/genfunctors.asp&amp;df=100&amp;forumid=189276&amp;select=1135306">Reply</A>][<A 
+                                title="Email a reply to the author of this message" 
+                                href="http://www.codeproject.com/script/comments/user_mail.asp?main=/cpp/genfunctors.asp&amp;df=100&amp;forumid=189276&amp;select=1135306">Email</A>][<A 
+                                title="View only messages within this thread" 
+                                href="http://www.codeproject.com/cpp/genfunctors.asp?df=100&amp;tid=1134888&amp;forumid=189276&amp;select=1135306#xx1135306xx">View 
+                                Thread</A>][<A 
+                                title="Get the URL for this message" 
+                                href="http://www.codeproject.com/cpp/genfunctors.asp?msg=1135306#xx1135306xx">Get 
+                                Link</A>]</TD>
+                                <TD class=messagetitle align=right>[<A 
+                                href="http://www.codeproject.com/script/comments/owner_modify_pw.asp?main=/cpp/genfunctors.asp&amp;df=100&amp;forumid=189276&amp;select=1135306"><I>Modify</I></A>|<A 
+                                href="http://www.codeproject.com/script/comments/owner_delete_pw.asp?main=/cpp/genfunctors.asp&amp;df=100&amp;forumid=189276&amp;select=1135306"><I>Delete</I></A>]<BR>
+                                <SCRIPT language=Javascript>MsgVoteForm(68533,1135306);</SCRIPT>
+                                </TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR>
+              <TR>
+                <TD><IMG height=6 src="Generalized Functors_files/t.gif" 
+                  width=1 border=0></TD></TR>
+              <TR id=1135397_h0 bgColor=#fef9e7>
+                <TD width="100%">
+                  <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+                    <TBODY>
+                    <TR>
+                      <TD bgColor=white><A name=xx1135397xx></A><IMG height=1 
+                        src="Generalized Functors_files/ind.gif" width=54><IMG 
+                        src="Generalized Functors_files/news_unselected.gif" 
+                        align=absMiddle>&nbsp;</TD>
+                      <TD class=messagetitle width="100%"><A 
+                        class=messagetitle id=DynMessLink 
+                        href="http://www.codeproject.com/cpp/genfunctors.asp?df=100&amp;forumid=189276&amp;select=1135397#xx1135397xx" 
+                        name=1135397>Re: Nice</A></TD>
+                      <TD vAlign=bottom><A 
+                        href="http://www.codeproject.com/script/profile/whos_who.asp?id=47096"><IMG 
+                        title="Click for User Profile" height=15 
+                        src="Generalized Functors_files/userinfo.gif" width=14 
+                        border=0></A>&nbsp;</TD>
+                      <TD noWrap width=140><FONT class=messagetitle>Alex 
+                        Mol&nbsp;</FONT></TD>
+                      <TD style="WIDTH: 9em" noWrap align=right 
+                        width=120><FONT class=messagetitle>11:15 14 Jun 
+                        '05&nbsp;</FONT></TD></TR></TBODY></TABLE></TD></TR>
+              <TR id=1135397_h1 style="DISPLAY: none">
+                <TD width="100%">
+                  <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+                    <TBODY>
+                    <TR>
+                      <TD><IMG height=1 
+                        src="Generalized Functors_files/ind.gif" width=54><IMG 
+                        src="Generalized Functors_files/news_none.gif" 
+                        align=absMiddle>&nbsp;</TD>
+                      <TD width="100%" bgColor=#d5eaff>
+                        <TABLE cellSpacing=5 cellPadding=0 width="100%" 
+border=0>
+                          <TBODY>
+                          <TR>
+                            <TD>
+                              <TABLE cellSpacing=0 cellPadding=0 width="100%" 
+                              border=0>
+                                <TBODY>
+                                <TR>
+                                <TD colSpan=2><FONT class=messagecontent>My 
+                                expirience only in windows programming, mostly 
+                                COM - needs of generalized functors is not so as 
+                                in pure C++ world (pair of times i make them by 
+                                hand and it takes not a long time). But for C++ 
+                                your absolutely right, it'l be very 
+                                convinient.<BR><BR><BR><BR>&nbsp;</FONT></TD></TR>
+                                <TR vAlign=top>
+                                <TD class=messagetitle>[<A 
+                                title="Reply to this current thread" 
+                                href="http://www.codeproject.com/script/comments/user_reply.asp?main=/cpp/genfunctors.asp&amp;df=100&amp;forumid=189276&amp;select=1135397">Reply</A>][<A 
+                                title="Email a reply to the author of this message" 
+                                href="http://www.codeproject.com/script/comments/user_mail.asp?main=/cpp/genfunctors.asp&amp;df=100&amp;forumid=189276&amp;select=1135397">Email</A>][<A 
+                                title="View only messages within this thread" 
+                                href="http://www.codeproject.com/cpp/genfunctors.asp?df=100&amp;tid=1134888&amp;forumid=189276&amp;select=1135397#xx1135397xx">View 
+                                Thread</A>][<A 
+                                title="Get the URL for this message" 
+                                href="http://www.codeproject.com/cpp/genfunctors.asp?msg=1135397#xx1135397xx">Get 
+                                Link</A>]</TD>
+                                <TD class=messagetitle align=right>[<A 
+                                href="http://www.codeproject.com/script/comments/owner_modify_pw.asp?main=/cpp/genfunctors.asp&amp;df=100&amp;forumid=189276&amp;select=1135397"><I>Modify</I></A>|<A 
+                                href="http://www.codeproject.com/script/comments/owner_delete_pw.asp?main=/cpp/genfunctors.asp&amp;df=100&amp;forumid=189276&amp;select=1135397"><I>Delete</I></A>]<BR>
+                                <SCRIPT language=Javascript>MsgVoteForm(47096,1135397);</SCRIPT>
+                                </TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR>
+              <TR>
+                <TD><IMG height=5 src="Generalized Functors_files/t.gif" 
+                  width=1 border=0></TD></TR></TBODY></TABLE></TD></TR>
+        <TR bgColor=#fbedbb>
+          <TD>
+            <TABLE cellPadding=2 width="100%">
+              <TBODY>
+              <TR>
+                <TD class=messagetitle>Last Visit: 11:58 Thursday 23rd June, 
+                  2005</TD>
+                <TD noWrap align=right><FONT class=messagetitle><SPAN 
+                  class=HoverLink>First</SPAN> <SPAN class=HoverLink>Prev</SPAN> 
+                  <SPAN class=HoverLink>Next</SPAN> <SPAN 
+                  class=HoverLink>&nbsp;&nbsp;&nbsp;&nbsp;</SPAN> 
+              </FONT></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE><BR>
+<TABLE cellSpacing=5 width="100%">
+  <TBODY>
+  <TR vAlign=top>
+    <TD><FONT style="FONT-SIZE: 7pt" size=1><A 
+      href="http://www.codeproject.com/?cat=1">All Topics</A>, <A 
+      href="http://www.codeproject.com/?cat=2">MFC / C++</A> &gt;&gt; <A 
+      href="http://www.codeproject.com/cpp/">C++ / MFC</A> &gt;&gt; <A 
+      href="http://www.codeproject.com/cpp/#General">General</A> <BR>Updated: 11 
+      Jun 2005 3:11 </FONT></TD>
+    <TD align=right><FONT style="FONT-SIZE: 7pt" size=1>Article content 
+      copyright Aleksei Trunov, 2005<BR>everything else Copyright © <A 
+      href="mailto:webmaster@codeproject.com">CodeProject</A>, 1999-2005</A>. 
+      <BR><A href="http://www.codeproject.com/info/MediaKit">Advertise on The 
+      Code Project</A> | <A 
+      href="http://www.codeproject.com/info/privacy.asp">Privacy</A> 
+  </FONT></TD></TR></TBODY></TABLE><BR>
+<CENTER>
+<TABLE cellSpacing=0 cellPadding=0 width="95%" border=0>
+  <TBODY>
+  <TR>
+    <TD bgColor=#ff9900 height=1><IMG height=1 
+      src="Generalized Functors_files/space.gif"></TD></TR>
+  <TR>
+    <TD align=middle><FONT size=1><A 
+      href="http://www.theultimatetoolbox.com/">The Ultimate Toolbox</A> • <A 
+      href="http://www.codeproject.com/redir.asp?id=235">MSDN Communities</A> | 
+      <A href="http://www.aspalliance.com/">ASP Alliance</A> • <A 
+      href="http://www.developerfusion.co.uk/">Developer Fusion</A> • <A 
+      href="http://www.developersdex.com/">Developersdex</A> • <A 
+      href="http://www.devguru.com/">DevGuru</A> • <A 
+      href="http://www.programmersheaven.com/">Programmers Heaven</A> • <A 
+      href="http://www.planet-source-code.com/">Planet Source Code</A> • <A 
+      href="http://www.tek-tips.com/">Tek-Tips Forums</A> • 
+</FONT></TD></TR></TBODY></TABLE></CENTER></BODY></HTML>

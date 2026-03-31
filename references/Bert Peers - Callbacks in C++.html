@@ -1,0 +1,783 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0052)http://users.chello.be/sf15772/programming/callback/ -->
+<HTML><HEAD>
+<META http-equiv=Content-Type content="text/html; charset=iso-8859-1">
+<META content="MSHTML 6.00.2800.1106" name=GENERATOR></HEAD>
+<BODY>&nbsp; 
+<CENTER>
+<TABLE border=0>
+  <TBODY>
+  <TR>
+    <TD>
+      <CENTER><FONT size=+4>Callbacks in C++</FONT></CENTER><FONT 
+      size=+3>Contents</FONT> 
+      <UL>
+        <LI>0. Introduction 
+        <LI>1. The problem 
+        <UL>
+          <LI>1.1. Making a callback 
+          <LI>1.2. Bad solution 
+          <LI>1.3. Good solution </LI></UL>
+        <LI>2. Building a solution 
+        <UL>
+          <LI>2.1. Loose the type 
+          <LI>2.2. Restore the type 
+          <LI>2.3. Implementing operator () 
+          <LI>2.4. The translator 
+          <LI>2.5. Instantiating the right template </LI></UL>
+        <LI>3. Improvements 
+        <UL>
+          <LI>3.1. Less restrictive types 
+          <LI>3.2. Different return types 
+          <LI>3.3. Automated generation </LI></UL>
+        <LI>4. Links </LI></UL>
+      <P>
+      <H4>Important note : Rich Hickey's page has apparently disappeared. A 
+      local copy of the original <CODE><A 
+      href="http://users.chello.be/sf15772/programming/callback/callback.h">callback.h</A></CODE> 
+      has been mirrored.</H4><FONT size=+3>0. Introduction</FONT> 
+      <P>This text is a direct result of a few tests I did to get a better 
+      understanding of typesafe C++ callbacks. There are some excellent texts 
+      out there (see the links section at the end), but they are presenting the 
+      final solution, without any lead as to why it is that way. More 
+      specifically, they point out the problems that their solution is avoiding, 
+      but they're not saying why another, more trivial solution, is bad. You'll 
+      quickly find out if you try to implement it, or, if you're a C++ expert, 
+      it'll be immediately obvious. However, if you're <I>not</I> an expert and 
+      have no time to implement, this text may help. I did some implementation 
+      work, and this text shows what the results are : instead of presenting the 
+      final solution and then explaining it top-down, we'll just work to the 
+      final solution by eliminating whatever doesn't work, and adding new 
+      desirable features as we go, in other words, building the templates bottom 
+      up... 
+      <P><I><B>Please Note :</B>&nbsp;</I> the code in this article is intended 
+      as an illustration of the concepts and techniques.&nbsp; As such, although 
+      written in C++, they serve as pseudocode to illustrate the data storage 
+      techniques and the control flow during actual execution; they're 
+      <I>not</I> written to actually be compiled and run.&nbsp; If you want to 
+      start using these templates, I suggest you download the C++ callback 
+      library directly of <A href="http://www.bestweb.net/~rhickey">Rich 
+      Hickey's page</A> [note: disappeared]; this page is merely documentation, 
+      not a replacement. 
+      <P><I>Big</I> credits go to <A href="http://www.bestweb.net/~rhickey">Rich 
+      Hickey</A> [note:disappeared] for inventing this great technique. 
+      <P>Written by Bert Peers, feedback very welcome on <A 
+      href="mailto:bpeers@acm.org">mailto:bpeers@acm.org</A>! Thanks &amp; 
+      enjoy.. <BR>Last update : 01/06/1999 15:44 
+      <P><FONT size=+3>1. The problem</FONT> 
+      <P><FONT size=+2>1.1. Making a callback</FONT> 
+      <P>In C making a callback is easy. A function is characterised by it's 
+      return type, the number of parameters it has, plus the type of every 
+      parameter. This entire characteristic can be formalized using a typedef, 
+      for instance 
+      <TABLE width="100%" bgColor=#dfdfdf border=0>
+        <TBODY>
+        <TR>
+          <TD><PRE>typedef void (*MyCallback)(int);</PRE></TD></TR></TBODY></TABLE>
+      <P>An object can then hold a callback saying 
+      <TABLE width="100%" bgColor=#dfdfdf border=0>
+        <TBODY>
+        <TR>
+          <TD><PRE>MyCallback Callback;</PRE></TD></TR></TBODY></TABLE>
+      <P>somewhere it's set : 
+      <TABLE width="100%" bgColor=#dfdfdf border=0>
+        <TBODY>
+        <TR>
+          <TD><PRE>Callback = SomeFunction;</PRE></TD></TR></TBODY></TABLE>
+      <P>and call it using 
+      <TABLE width="100%" bgColor=#dfdfdf border=0>
+        <TBODY>
+        <TR>
+          <TD><PRE>Callback (12);</PRE></TD></TR></TBODY></TABLE>
+      <P>In C++ now, everything is built with objects : a program should mirror 
+      the real world environment it's imitating, so all the actions (functions) 
+      will really be acting on some object (they're members). The question then 
+      arises how you can ask some object to make a callback to a function which 
+      is a member, ie which is part of an object, as opposed to just a function 
+      that lives in the global address space, without knowing beforehand what 
+      the other object will be... 
+      <P>In this document we'll use the following example. Suppose in some GUI 
+      there's a button called "Play" : 
+      <TABLE width="100%" bgColor=#dfdfdf border=0>
+        <TBODY>
+        <TR>
+          <TD><PRE>CButton Play;</PRE></TD></TR></TBODY></TABLE>
+      <P>Also, someone made a CDPlayer object which accepts a "StartCD ()" 
+      command : 
+      <TABLE width="100%" bgColor=#dfdfdf border=0>
+        <TBODY>
+        <TR>
+          <TD><PRE>class CDPlayer
+{
+public:
+&nbsp;/* lots of stuff here */
+&nbsp;&nbsp;&nbsp; void&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; StartCD ();
+};</PRE></TD></TR></TBODY></TABLE>
+      <P>What we want is to start the CD when the button is clicked. What we 
+      want is to ask the CButton object to call back CDPlayer::StartCD () when 
+      it's clicked. How can we do this ? 
+      <P><FONT size=+2>1.2. Bad solution</FONT> 
+      <P>For starters, this won't work : 
+      <TABLE width="100%" bgColor=#dfdfdf border=0>
+        <TBODY>
+        <TR>
+          <TD><PRE>class CButton
+{
+public:
+&nbsp; /* lots of stuff */
+&nbsp; void (*Callback) ();
+};
+CButton Play;
+CDPlayer Player;
+Play.Callback = Player::StartCD ();&nbsp;&nbsp;&nbsp;&nbsp; // Won't compile
+Play.Callback ();</PRE></TD></TR></TBODY></TABLE>
+      <P>It's not working because Player::StartCD () is of a different type than 
+      a void (*) (), even though it has exactly the same return type, the same 
+      number of parameters and the right types for the parameters. The compiler 
+      however knows that it's part of a CDPlayer, so it's a member, not a 
+      function. And since Callback is declared to be a pointer to a function, 
+      trying to assign it a pointer to a member won't work. 
+      <P>This would work : 
+      <TABLE width="100%" bgColor=#dfdfdf border=0>
+        <TBODY>
+        <TR>
+          <TD><PRE>class CDPlayer;
+class CButton
+{
+public:
+&nbsp;&nbsp;&nbsp; void (CDPlayer::*Callback) ();
+}:
+Play.Callback = Player::StartCD ();</PRE></TD></TR></TBODY></TABLE>
+      <P>The syntax may be a bit spacey, but fixing a few details, it would work 
+      : we've declared Callback to be a pointer to a member of CDPlayer, not 
+      just a function. There's a serious problem here though : CButton depends 
+      on CDPlayer. This is totally wrong : when someone writes a GUI toolkit 
+      full of buttons, menus and so on, he wants the button to be able to call 
+      any member, not just a member in a CDPlayer. In other words, the callback 
+      system should be totally unaware of the type of the object that will be 
+      holding the member we'd like to be called back. However at the same time 
+      we can't declare a pointer to a member without knowing the exact type of 
+      the class. 
+      <P>A solution may seem to be to use some form of RootObject, ie every 
+      object you want to be called back must inherit from some abstract, in 
+      itself useless, base object, RootObject : 
+      <TABLE width="100%" bgColor=#dfdfdf border=0>
+        <TBODY>
+        <TR>
+          <TD><PRE>class RootObject {};
+class CButton
+{
+public:
+&nbsp;&nbsp;&nbsp; void (RootObject::*Callback) ();
+};
+
+
+class CDPlayer : public RootObject
+{
+&nbsp;&nbsp;&nbsp; void StartCD ();
+};</PRE></TD></TR></TBODY></TABLE>
+      <P>Now this works : 
+      <TABLE width="100%" bgColor=#dfdfdf border=0>
+        <TBODY>
+        <TR>
+          <TD><PRE>Play.Callback = Player::StartCD ();</PRE></TD></TR></TBODY></TABLE>
+      <P>because to the compiler Player is besides a CDPlayer, also a 
+      RootObject. The problem is however that once Player is converted to 
+      RootObject, it's members loose basically any type they had. For instance, 
+      the following will also work : 
+      <TABLE width="100%" bgColor=#dfdfdf border=0>
+        <TBODY>
+        <TR>
+          <TD><PRE>class CDPlayer : public RootObject
+{
+&nbsp;&nbsp;&nbsp; void StartCD (int Track) { cout &lt;&lt; "Playing Track " &lt;&lt; Track; /* .. */ }
+};
+
+Play.Callback = Player::StartCD ();</PRE></TD></TR></TBODY></TABLE>
+      <P>The compiler will give you a warning, but will compile and link happily 
+      (at least Watcom 11.0 did). The result obviously is garbage. A test gave : 
+
+      <TABLE width="100%" bgColor=#dfdfdf border=0>
+        <TBODY>
+        <TR>
+          <TD><PRE>Playing Track 466894</PRE></TD></TR></TBODY></TABLE>
+      <P>In other words, StartCD () is just reading a garbage value of the 
+      stack; if it were a pointer things would quickly go wrong. 
+      <P>So we're still stuck : we want a callback pointer that knows that it's 
+      a pointer to a member of a class, but without being tied to a specificy 
+      class<I>type</I>. 
+      <P><FONT size=+2>1.3. A Good solution</FONT> 
+      <P>The initial code (the listing that wouldn't compile) actually looked 
+      very nice : 
+      <TABLE width="100%" bgColor=#dfdfdf border=0>
+        <TBODY>
+        <TR>
+          <TD><PRE>class CButton
+{
+public:
+&nbsp; /* lots of stuff */
+&nbsp; void (*Callback) ();
+};
+CButton Play;
+CDPlayer Player;
+Play.Callback = Player::StartCD ();&nbsp;&nbsp;&nbsp;&nbsp; // Won't compile.&nbsp; Would be really nice if it worked
+Play.Callback ();&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Very readable</PRE></TD></TR></TBODY></TABLE>
+      <P>It's not working, but it's where we want to go. This sample uses the 
+      built-in pointer-to-function type, but what we really need are smarter 
+      pointers : a pointer that knows it could be either a regular 
+      pointer-to-a-function, or a pointer-to-a-member. In both cases it should 
+      not be possible to assign the pointer a reference to a function or member 
+      that has the wrong number of parameters, or the wrong types. The next part 
+      is about how to write this. 
+      <P><FONT size=+3>2. Building a solution</FONT> 
+      <P><FONT size=+2>2.1. Loose the type</FONT> 
+      <P>Because we'd like to write the code for the CButton class without 
+      knowing what the callback is going to be used for, we can't include any 
+      assumptions about the type of the class the callback must point to -- if 
+      it's a member in the first place, and not a regular function. We may only 
+      make restrictions about the return type, number of parameters and types of 
+      these. So, no matter what we do, we cannot possibly write a CButton class 
+      and have any reference to the type of the actual function to be called, 
+      because, if that function is a member, then it will already carry 
+      information about the class type it belongs to. So, the only way to store 
+      pointers to members is to forget they're members : 
+      <P>void* Callback; 
+      <P>Obviously, we can't call a member without knowing the owner, and again 
+      we'll need the owner without knowing it's type, so we write : 
+      <TABLE width="100%" bgColor=#dfdfdf border=0>
+        <TBODY>
+        <TR>
+          <TD><PRE>void* Class;</PRE></TD></TR></TBODY></TABLE>
+      <P>We'll start storing this information as our inner-most data of interest 
+      : 
+      <TABLE width="100%" bgColor=#dfdfdf border=0>
+        <TBODY>
+        <TR>
+          <TD><PRE>class FunctorBase
+{
+public:
+&nbsp;&nbsp;&nbsp; typedef void (FunctorBase::*TMemberFunction) ();
+&nbsp;&nbsp;&nbsp; FunctorBase () : Class (0), Callback (0) {}
+&nbsp;&nbsp;&nbsp; FunctorBase (const void *_Class,const void *_Callback, size_t Size)
+&nbsp;&nbsp;&nbsp; {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if (_Class)&nbsp;&nbsp;&nbsp;&nbsp; // Callback must be a member
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Class = (void*)_Class;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; memcpy (CallbackMember, _Callback, Size);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; else&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Must be a regular pointer to a function
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Callback = _Callback;
+&nbsp;&nbsp;&nbsp; }
+&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; union
+&nbsp;&nbsp;&nbsp; {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; const void *Callback;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; char CallbackMember [sizeof (TMemberFunction)];
+&nbsp;&nbsp;&nbsp; };
+&nbsp;&nbsp;&nbsp; void* Class;
+};</PRE></TD></TR></TBODY></TABLE>
+      <P>If you declare such a class, you can store a pointer in it to just a 
+      regular function, like so : 
+      <TABLE width="100%" bgColor=#dfdfdf border=0>
+        <TBODY>
+        <TR>
+          <TD><PRE>FunctorBase Base (0, NormalCallback, sizeof (NormalCallback));</PRE></TD></TR></TBODY></TABLE>
+      <P>or make them point to a member : 
+      <TABLE width="100%" bgColor=#dfdfdf border=0>
+        <TBODY>
+        <TR>
+          <TD><PRE>FunctorBase Base (&amp;Player, CDPlayer::StartCD, sizeof (TMemberFunction));</PRE></TD></TR></TBODY></TABLE>
+      <P>So this class just stores our data and nothing more. 
+      <P><FONT size=+2>2.2. Restore the type</FONT> 
+      <P>Now, what we want to do is make another class that'll take these two 
+      void pointers, restore at least some of the typesafety, and allow us to 
+      make the call using a simple syntax. The people who write the "callers", 
+      that is, the classes that will make the call (and who need to store the 
+      callback pointer), decide upon the number of parameters, and their types, 
+      to be used during the callback. So, if they decide that the callback only 
+      makes sense with one parameter which is an int, they could do this : 
+      <TABLE width="100%" bgColor=#dfdfdf border=0>
+        <TBODY>
+        <TR>
+          <TD><PRE>class CallbackWithOneParamWhichIsInt : public FunctorBase
+{
+public:
+&nbsp;&nbsp;&nbsp; typedef void (*TCallbackWithOneParamWhichIsInt) (int);
+&nbsp;&nbsp;&nbsp; CallbackWithOneParamWhichIsInt
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (const void *_Class, const TCallbackWith... _Callback, size_t Size) :
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; FunctorBase (_Class, _Callback, Size) {};
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; void operator () (int Param1) { (*Callback) (Param1); }
+};</PRE></TD></TR></TBODY></TABLE>
+      <P>Besides the fact that this code totally ignores the possibility that 
+      _Callback is actually a member and not a function, it's working : 
+      <TABLE width="100%" bgColor=#dfdfdf border=0>
+        <TBODY>
+        <TR>
+          <TD><PRE>class CButton
+{
+public:
+&nbsp; /* lots of stuff */
+&nbsp;&nbsp;&nbsp; CallbackWithOneParamWhichIsInt *Callback;
+};
+
+CallbackWithOneParamWhichIsInt* ConvertRegularMemberToTheRightClass (...) { ... }
+
+CDPlayer Player;
+CButton Button;
+Button.Callback = ConvertRegularMemberToTheRightClass (&amp;CDPlayer::StartCD);</PRE></TD></TR></TBODY></TABLE>
+      <P>Obviously a <I>lot</I> is missing here, but you hopefully get the idea 
+      : because the CButton class is storing a pointer to a class, not a pointer 
+      to a function, you can only assign pointers to it that came out of 
+      ConvertRegularMemberToTheRightClass. This Convert.. function will check if 
+      the member is really of the right type (has one param, being an int), and 
+      if so it'll build a CallbackWith... class and return a pointer to it. If 
+      the button then wants to invoke the callback, it just says : 
+      <TABLE width="100%" bgColor=#dfdfdf border=0>
+        <TBODY>
+        <TR>
+          <TD><PRE>(*Callback) (12);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Call StartCD (12);</PRE></TD></TR></TBODY></TABLE>
+      <P>This will call Callback's operator (), which in turn performs the 
+      callback. 
+      <P>Since we don't want to write a separate conversion routine and declare 
+      a separate class for every possible combination of parameters, we'll 
+      automate the process. Suppose that we still only allow one parameter; 
+      however we'd like to have a class + convertor for int, long, float, char, 
+      char* etc. This is obviously where templates come in : 
+      <TABLE width="100%" bgColor=#dfdfdf border=0>
+        <TBODY>
+        <TR>
+          <TD><PRE>template &lt;class Parameter1&gt;
+class Functor1 : protected FunctorBase
+{
+public:
+&nbsp;&nbsp;&nbsp; Functor1 () {}
+&nbsp;&nbsp;&nbsp; void operator () (Parameter1 param1) const
+&nbsp;&nbsp;&nbsp; { /* Insert some magic here */ }
+protected:
+&nbsp;&nbsp;&nbsp; Functor1(const void *_Class,const void *_Callback,size_t Size) :
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; FunctorBase (_Class, _Callback, _Size) {}
+};</PRE></TD></TR></TBODY></TABLE>
+      <P>We don't have that neat ConvertRegularMemberToTheRightClass yet, but we 
+      need to take a look at how the operator () might work first. 
+      <P><FONT size=+2>2.3. Implementing operator ()</FONT> 
+      <P>For regular functions, there's no problem; the following works just 
+      fine : 
+      <TABLE width="100%" bgColor=#dfdfdf border=0>
+        <TBODY>
+        <TR>
+          <TD><PRE>&nbsp;&nbsp;&nbsp; void operator () (Parameter1 param1) const
+&nbsp;&nbsp;&nbsp; {&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ((void (*)(Parameter1))Callback)(param1);
+&nbsp;&nbsp;&nbsp; }</PRE></TD></TR></TBODY></TABLE>
+      <P>We take the Callback pointer, which is just a pointer to a regular 
+      function, and we typecast it away from void*, back to the way it should be 
+      : a 
+      <TABLE width="100%" bgColor=#dfdfdf border=0>
+        <TBODY>
+        <TR>
+          <TD><PRE>void (*) (Parameter1)</PRE></TD></TR></TBODY></TABLE>
+      <P>a pointer to a function that returns void, has 1 parameter, of type 
+      Parameter1 (from the template). Is it safe to do this ? After all, 
+      Callback is just a void*, it might as well be an int (*) (char*). Well, 
+      assuming that ConvertRegularMember.. will only return a Functor1 class if 
+      the function you passed it fits, this is safe. In other words, we'll have 
+      to make sure that nobody can ever create a Functor1 with a Callback 
+      pointing to something which is <I>not</I> void (*) (Parameter1). That's 
+      why Functor1's constructor is protected. Nobody can make a Functor1, 
+      except a new class which derives from Functor1 -- so that's where we'll 
+      find the ConvertRegular.. later on. 
+      <P>Back to the operator () first, however. If we want it to work for 
+      pointers to members as well, we'll have to "upgrade" the void* Class back 
+      to the right class type (e.g. CDPlayer), and then afterwards upgrade the 
+      void* CallbackMember back to a CDPlayer::* as well. However, at this point 
+      we don't know what type Class is, so we can't do the upgrading. We cannot 
+      introduce more information to resolve this unknowness, or we'd be making 
+      Functor1 specific again to both function signature <I>and</I> 
+      callee-classtype -- which is what we've been trying to avoid all the time. 
+      Remember how CButton shouldn't know about CDPlayer; so, building a 
+      Functor1 like this : 
+      <TABLE width="100%" bgColor=#dfdfdf border=0>
+        <TBODY>
+        <TR>
+          <TD><PRE>template &lt; class Callee, class Parameter1&gt;
+class Functor1 /* ... */</PRE></TD></TR></TBODY></TABLE>
+      <P>is not an option, because we want to declare a callback in CButton 
+      without knowing what type of callee will be interested in it : 
+      <TABLE width="100%" bgColor=#dfdfdf border=0>
+        <TBODY>
+        <TR>
+          <TD><PRE>class CButton
+{
+&nbsp;&nbsp;&nbsp; /* .... */
+&nbsp;&nbsp;&nbsp; Functor1&lt; ? , int&gt; TheCallback;
+&nbsp;&nbsp;&nbsp; /* What will you write for "?" ? */
+};</PRE></TD></TR></TBODY></TABLE>
+      <P>The solution is to do the upgrading in a class that <I>does</I> know 
+      what the type of callee is. Since Functor1 must be callee-type 
+      independent, the upgrading can't be done in Functor1. 
+      <P>So now we have two reasons to build a class that will inherit from 
+      Functor1 to implement more functionality : 
+      <UL>
+        <LI>ConvertRegularMember.. needs to check if the callback function 
+        passed to it matches whatever Functor1 expects, and only then build a 
+        Functor1 
+        <LI>We need to sneak the type of the callee in our template declaration, 
+        but we can't do it in Functor1 </LI></UL><FONT size=+2>2.4. The 
+      translator</FONT> 
+      <P>The translator is our "convertor" : it's a class that's parameterised 
+      for Parameter1 <I>and</I> callee type : 
+      <TABLE width="100%" bgColor=#dfdfdf border=0>
+        <TBODY>
+        <TR>
+          <TD><PRE>template &lt;class P1, class Callee, class Func&gt;
+class MemberTranslator1 : public Functor1&lt;P1&gt;&nbsp;
+{
+public:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; MemberTranslator1(Callee &amp;Class, const Func &amp;MemberFunction) :
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Functor1&lt;P1&gt;(&amp;Class, &amp;MemberFunction, sizeof (Func)) {}
+};</PRE></TD></TR></TBODY></TABLE>
+      <P>MemberTranslator1 inherits publicly from Functor1, so it can create 
+      objects in those classes. We're still not doing any real checking here : 
+      we're assuming that Func is a void (*) (P1). So we're no step closer to 
+      solving the first of the two problems near the end of section 2.3. 
+      However, we do know the callee type now, so in theory we could write 
+      something like this : 
+      <TABLE width="100%" bgColor=#dfdfdf border=0>
+        <TBODY>
+        <TR>
+          <TD><PRE>operator () (P1 p1)
+{
+&nbsp;&nbsp;&nbsp; Callee* Who = (Callee*)(Class);
+&nbsp;&nbsp;&nbsp; Func &amp;TheMemberFunction (*(Func*)(void*)(CallbackMember));
+&nbsp;&nbsp;&nbsp; (Who-&gt;*TheMemberFunction) (p1);
+}</PRE></TD></TR></TBODY></TABLE>
+      <P>There's a few problems however. First of all, it's Functor1 that has 
+      the () operator. The CButton for example wants to say 
+      <TABLE width="100%" bgColor=#dfdfdf border=0>
+        <TBODY>
+        <TR>
+          <TD><PRE>(*Callback) ();</PRE></TD></TR></TBODY></TABLE>
+      <P>where Callback is a Functor1&lt;int&gt;*, and <I>not</I> a 
+      MemberTranslator1&lt;int, CDPlayer, void (CDPlayer::*)int&gt;*. 
+      <P>The trick is this : if we're dealing with a regular function (not a 
+      member in a class), then the solution in the previous section works. If 
+      we're dealing with a member, then MemberTranslator1 has all the 
+      information that was missing from Functor1 to do the proper upgrading of 
+      Caller (from void* to Callee*) and MemberCallback (from void* to void 
+      (Callee::*)(P1) ), so the logical solution is to do the upgrading in 
+      MemberTranslator1 : 
+      <P>in Functor1 : 
+      <TABLE width="100%" bgColor=#dfdfdf border=0>
+        <TBODY>
+        <TR>
+          <TD><PRE>void operator() (P1 p1) const
+{
+&nbsp;&nbsp;&nbsp; if (Class)&nbsp; // Is a member ?
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; UpgradeAndCall (*this, p1)
+&nbsp;&nbsp;&nbsp; else
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ((void (*)(P1))Callback)(p1);&nbsp;&nbsp; // Can take care of it myself
+
+protected:
+&nbsp;&nbsp;&nbsp; typedef void (*TUpgradeAndCall)(const FunctorBase &amp;, P1);
+&nbsp;&nbsp;&nbsp; Functor1(TUpgradeAndCall _UpgradeAndCall, const void *Class,const void *Callback,size_t Size):
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; FunctorBase (Class, Callback, Size),
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; UpgradeAndCall (_UpgradeAndCall) {}
+private:
+&nbsp;&nbsp;&nbsp; TUpgradeAndCall UpgradeAndCall;
+};</PRE></TD></TR></TBODY></TABLE>
+      <P>The constructor changes : it accepts a reference to a function called 
+      UpgradeAndCall which the operator () will delegate the work to of 
+      upgrading the void* to the right type and making the call. Functor1 
+      typedefs the function and stores a pointer to it. 
+      <P>In MemberTranslator1 we get this : 
+      <TABLE width="100%" bgColor=#dfdfdf border=0>
+        <TBODY>
+        <TR>
+          <TD><PRE>MemberTranslator1(Callee &amp;Class, const Func &amp;MemberFunction) :&nbsp;
+&nbsp;&nbsp;&nbsp; Functor1&lt;P1&gt; (UpgradeAndCall, &amp;Class, &amp;MemberFunction, sizeof (Func)) {}
+&nbsp;&nbsp;&nbsp; // Initialize a Functor1 like before, but hand it a pointer to this static function :
+static void UpgradeAndCall (const FunctorBase &amp;ftor, P1 p1)
+{
+&nbsp;&nbsp;&nbsp; Callee* Who = (Callee*)(ftor.Class);
+&nbsp;&nbsp;&nbsp; Func &amp;TheMemberFunction (*(Func*)(void*)(ftor.CallbackMember));
+&nbsp;&nbsp;&nbsp; (Who-&gt;*TheMemberFunction) (p1);
+}</PRE></TD></TR></TBODY></TABLE>
+      <P>Here our desired piece of code returns : it takes the two void pointers 
+      Class and CallbackMember from the Functor passed to it (ftor), upgrades 
+      them and calls. Is it safe ? Yes, UpgradeAndCall will only be called from 
+      within a Functor1 built by MemberTranslator1, because that's the only way 
+      Functor1 could get that pointer (remember it's constructor is protected). 
+      In other words, first MemberTranslator1 builds a Functor1, which IsA 
+      FunctorBase, at which point all type info gets lost in the conversion to a 
+      void*. However, that very same MemberTranslator1 object is upgrading the 
+      void pointers back to the fully typecast state, so nothing can go wrong. 
+      This is called a <I>safe cast</I> : the entity that removed the type info, 
+      restores it. This is completely different from passing any object a 
+      pointer to a RootObject, then casting it to a CDPlayer* and just hope that 
+      it really <I>is</I> a CDPlayer and not a CButton. 
+      <P>What's the hassle with the static ? 
+      <P>Well, without the static keyword, UpgradeAndCall would be a regular 
+      member : a function, part of a MemberTranslator1 class. This class, 
+      because of the template, is typed with info about the function signature 
+      <I>and</I> the callee type. Good, that's the whole point because we want 
+      the abstract void * Callee to be upgraded again to the right callee type. 
+      However, this also means, as far as Functor1 is concerned, that 
+      UpgradeAndCall is absolutely no different from the original member 
+      function (say StartCD) in the original callee class (say CDPlayer) : 
+      they're both members <I>of a particular callee class</I>. If 
+      UpgradeAndCall wasn't static, we could never say : 
+      <TABLE width="100%" bgColor=#dfdfdf border=0>
+        <TBODY>
+        <TR>
+          <TD><PRE>typedef void (*TUpgradeAndCall)(const FunctorBase &amp;, P1);</PRE></TD></TR></TBODY></TABLE>
+      <P>because that is just a regular pointer to a function, and <I>not</I> a 
+      pointer to a member. So, we'd be right back were we started, with the 
+      compiler complaining that you can't assign 
+      MemberTranslator1::UpgradeAndCall to the UpgradeAndCall declared in 
+      Functor1 : they're not the same type ! 
+      <P>The only option to make Functor1 have a pointer to a MemberTranslator1 
+      member, is to make it static, which turns it into a regular function (not 
+      a member) as far as the compiler knows, making it assignable to an 
+      UpgradeAndCall variable declared as a TUpgradeAndCall. 
+      <P>Since UpgradeAndCall is a static, it can't take the void pointers it 
+      wants to upgrade directly from the Functor1 it inherited from, hence we 
+      pass it a FunctorBase &amp;ftor. 
+      <P><FONT size=+2>2.5. Instantiating the right template</FONT> 
+      <P>Now there's only one problem left : given a class C that has a member M 
+      that has one parameter of type P1 and returns void, build a 
+      MemberTranslator1 with the right stuff at the right place. This would be 
+      our ConvertRegularMemberToTheRightClass (we'll call it MakeFunctor for 
+      short) which will take a class pointer, a member in that class, and 
+      magically return a MemberTranslator1. 
+      <P>So, the parameters will be : 
+      <UL>
+        <LI>Type (class) of the object the member belongs to : class Callee 
+        <LI>Type of the single parameter the member will take : class P1 
+      </LI></UL>giving us : 
+      <TABLE width="100%" bgColor=#dfdfdf border=0>
+        <TBODY>
+        <TR>
+          <TD><PRE>template &lt;class Callee, class P1&gt;</PRE></TD></TR></TBODY></TABLE>
+      <P>The result would be of type : 
+      <TABLE width="100%" bgColor=#dfdfdf border=0>
+        <TBODY>
+        <TR>
+          <TD><PRE>MemberTranslator1&lt;P1, Callee, void (Callee::*)(P1)&gt;</PRE></TD></TR></TBODY></TABLE>
+      <P>Not a big deal, really : 
+      <TABLE width="100%" bgColor=#dfdfdf border=0>
+        <TBODY>
+        <TR>
+          <TD><PRE>MakeFunctor(Callee &amp;Class, void (Callee::*const &amp;Member)(P1))
+{
+&nbsp;&nbsp;&nbsp; return MemberTranslator1&lt;P1, Callee, void (Callee::*)(P1)&gt; (Class, Member);
+}</PRE></TD></TR></TBODY></TABLE>
+      <P>We don't need all the hightech UpgradeAndCall for a regular function, 
+      but since we've hidden the constructor of Functor1 by making it protected, 
+      this won't work : 
+      <TABLE width="100%" bgColor=#dfdfdf border=0>
+        <TBODY>
+        <TR>
+          <TD><PRE>template &lt;class P1&gt;
+inline Functor1&lt;P1&gt;
+MakeFunctor (void (*TheFunc)(TP1))
+{
+&nbsp;&nbsp;&nbsp; return Functor1&lt;P1&gt; (0, 0, TheFunc, sizeof (TheFunc));&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Protected
+}</PRE></TD></TR></TBODY></TABLE>
+      <P>So we'll have to build a FunctionTranslator1 too, just so we get access 
+      to the constructor (by making it inherit from Functor1) : 
+      <TABLE width="100%" bgColor=#dfdfdf border=0>
+        <TBODY>
+        <TR>
+          <TD><PRE>template &lt;class P1,class Func&gt;
+class FunctionTranslator1 : public Functor1&lt;P1&gt;
+{
+public:
+&nbsp;&nbsp;&nbsp; FunctionTranslator1 (Func RegularFunction) : Functor1&lt;P1&gt; (0,0,RegularFunction,0) {}
+};</PRE></TD></TR></TBODY></TABLE>
+      <P>and MakeFunctor for non-member functions then goes like this : 
+      <TABLE width="100%" bgColor=#dfdfdf border=0>
+        <TBODY>
+        <TR>
+          <TD><PRE>template &lt;class TP1&gt;
+inline FunctionTranslator1&lt;TP1, void (*)(TP1)&gt;
+MakeFunctor (void (*TheFunc)(TP1))
+{
+&nbsp;&nbsp;&nbsp; return FunctionTranslator1&lt;TP1, void (*)(TP1)&gt; (TheFunc);
+}</PRE></TD></TR></TBODY></TABLE>
+      <P>That's it ! CButton declares a callback as a Functor1&lt;int&gt;*. If a 
+      CDPlayer wants one of it's class members to be called, they'll have to be 
+      of exactly the right type : 
+      <TABLE width="100%" bgColor=#dfdfdf border=0>
+        <TBODY>
+        <TR>
+          <TD><PRE>Button.Callback = MakeFunctor (Player, &amp;CDPlayer::StartPlaying);</PRE></TD></TR></TBODY></TABLE>
+      <P>The MakeFunctor call will build a MemberTranslator1 which has exactly 
+      the right types filled in for whatever StartPlaying wants. 
+      MemberTranslator1 is also a Functor1 (by inheritance), more precisely it 
+      is a Functor1&lt;P1&gt; where P1 is the type of the parameter StartPlaying 
+      wants. If P1 is not an int, then the compiler will complain that it can't 
+      assign Functor1&lt;P1&gt; (which is what came out of MakeFunctor) to a 
+      Functor1&lt;int&gt; (which is the type of Button.Callback) and compilation 
+      stops : great, no runtime crash ! If StartPlaying has no parameters at 
+      all, or has more than one parameter, then the compiler will complain it 
+      can't instantiate MakeFunctor because there's no matching template (the 
+      template we wrote only accepts a single P1) and things stop again. 
+      Finally, note that 
+      <TABLE width="100%" bgColor=#dfdfdf border=0>
+        <TBODY>
+        <TR>
+          <TD><PRE>void NormalFunction (int Something)
+{ /* ... */ }
+
+Button.Callback = MakeFunctor (NormalFunction);</PRE></TD></TR></TBODY></TABLE>
+      <P>works just as well : Button.Callback may point to normal functions and 
+      members alike. 
+      <P><FONT size=+3>3. Improvements</FONT> 
+      <P><FONT size=+2>3.1. Less restrictive types</FONT> 
+      <P>It's great to have fully typesafe callbacks, but the solution in part 2 
+      is a bit too restrictive. Suppose the CDPlayer::StartPlaying is declared 
+      as follows : 
+      <TABLE width="100%" bgColor=#dfdfdf border=0>
+        <TBODY>
+        <TR>
+          <TD><PRE>void StartPlaying (long Track);</PRE></TD></TR></TBODY></TABLE>
+      <P>Obviously a callback which expects an int would work just as well with 
+      a member function that actually expects a long. 
+      <P>It seems like replacing a few 'long's with 'int's for the sake of some 
+      GUI callback convention isn't too much trouble; however, consider the 
+      situation where the single parameter is a class. The power of OO is that 
+      any class which inherits from this class, doesn't differ from the base 
+      class. In other words, this should work : 
+      <TABLE width="100%" bgColor=#dfdfdf border=0>
+        <TBODY>
+        <TR>
+          <TD><PRE>class ClassA;
+class CButton
+{
+&nbsp; /*...*/
+&nbsp; Functor1&lt;ClassB*&gt; Callback;&nbsp;&nbsp; // Callback that has a pointer to a ClassA as a parameter
+};
+
+class ClassB : public ClassA;
+void SomeFunction (ClassA*);
+Button.Callback = SomeFunction; // Oops : strictly speaking, ClassB IsNotA ClassA, although that's the
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // whole point of using inheritance</PRE></TD></TR></TBODY></TABLE>
+      <P>In short, we want callback assignment to work whenever the number of 
+      parameters matches, and the individual parameters, when comparing what's 
+      expected with what's given, can be trivially converted by the compiler 
+      (e.g. long &lt;-&gt; int, ClassB -&gt; ClassA). 
+      <P>The core of the problem in the code so far is that the compiler will 
+      only look at the parameter type of the actual callback function, build a 
+      MemberTranslator1 out of it, and only <I>then</I> compare this with what 
+      the Functor1 (e.g. Button.Callback) expects, and complain. The solution is 
+      to force the compiler to create a MemberTranslator1 which has the same 
+      internal parameter type as what the Callback expects. One way to do this 
+      is to introduce a dummy Functor1&lt;P1&gt; pointer. If we expand the 
+      Functor1 constructor to accept a dummy pointer : 
+      <TABLE width="100%" bgColor=#dfdfdf border=0>
+        <TBODY>
+        <TR>
+          <TD><PRE>class Functor1:protected FunctorBase
+{
+public:
+&nbsp;&nbsp;&nbsp; class DummyInit {};
+&nbsp;&nbsp;&nbsp; Functor1(DummyInit * = 0) {}
+/* ... */</PRE></TD></TR></TBODY></TABLE>
+      <P>and made sure it's accessable from the Translators : 
+      <TABLE width="100%" bgColor=#dfdfdf border=0>
+        <TBODY>
+        <TR>
+          <TD><PRE>template &lt;class P1, class TP1&gt;
+inline FunctionTranslator1&lt;P1, void (*)(TP1)&gt;
+MakeFunctor (Functor1&lt;P1&gt;*, void (RegularFunction)(TP1))
+{
+&nbsp;&nbsp;&nbsp; return FunctionTranslator1&lt;P1, void (*)(TP1)&gt; (RegularFunction);
+}</PRE></TD></TR></TBODY></TABLE>
+      <P>then we could write this : 
+      <TABLE width="100%" bgColor=#dfdfdf border=0>
+        <TBODY>
+        <TR>
+          <TD><PRE>Button.Callback = MakeFunction (Functor1&lt;int&gt;* 0, SomeRegularFunction);</PRE></TD></TR></TBODY></TABLE>
+      <P>The dummy argument is set to 0, but the compiler does know that it's a 
+      Functor1&lt;int&gt;*. So, in the MakeFunctor template P1 will always be 
+      int, while TP1 will be the actual type of SomeRegularFunction's parameter 
+      (which could well be a long). We then use P1, not TP1, to build a Functor1 
+      : 
+      <TABLE width="100%" bgColor=#dfdfdf border=0>
+        <TBODY>
+        <TR>
+          <TD><PRE>template &lt;class P1,class Func&gt;
+class FunctionTranslator1 : public Functor1&lt;P1&gt;
+{
+public:
+&nbsp;&nbsp;&nbsp; FunctionTranslator1 (Func f):Functor1&lt;P1&gt; /* ... */</PRE></TD></TR></TBODY></TABLE>
+      <P>so the final result is indeed a class derived from a Functor1&lt;P1&gt; 
+      and not a Functor1&lt;TP1&gt;. Therefor, if Button.Callback is also a 
+      Functor1&lt;P1&gt;, assignment will always work, regardless of TP1. 
+      However, isn't this a bad idea ? Wasn't the whole point of this piece of 
+      source to <I>prevent</I> calling a callback with the wrong types ? Being 
+      able to make the callback using a long instead of an int is fine, but 
+      using a char* is not. The compiler fortunately still takes care of this : 
+      if TP1 has no trivial conversion to P1, then the following line : 
+      <TABLE width="100%" bgColor=#dfdfdf border=0>
+        <TBODY>
+        <TR>
+          <TD><PRE>((void (*)(P1))func)(p1);</PRE></TD></TR></TBODY></TABLE>
+      <P>in Functor1's operator (), will fail, because if you can't go from TP1 
+      to P1, then you also can't go from void (*)(TP1) to void (*)(P1), and this 
+      is necessary to compile the instantiated template. Thus, no conversion 
+      means an aborted compilation : great ! 
+      <P>The same technique of providing a dummy Functor1&lt;&gt; pointer to 
+      enforce a certain type, can also be used in the MemberTranslator class, 
+      and the result is similar to the FunctionTranslator improvement : if you 
+      can go from class TP1 to class P1, then the assignment works, otherwise 
+      compilation fails. 
+      <P><FONT size=+2>3.2. Different return types</FONT> 
+      <P>So far all the callback functions and members have returned void. 
+      Introducing a return type is easy, although the code gets more cluttered 
+      up with every enhancement : 
+      <TABLE width="100%" bgColor=#dfdfdf border=0>
+        <TBODY>
+        <TR>
+          <TD><PRE>template &lt;class P1, class Callee, class TRT, class CallType, class TP1&gt;
+inline MemberTranslator1&lt;P1, Callee, TRT (CallType::*)(TP1)&gt;
+MakeFunctor(Functor1&lt;P1&gt;*, Callee &amp;Class, TRT (CallType::* const &amp;Member)(TP1))
+&nbsp;{
+&nbsp;&nbsp;&nbsp; typedef TRT (CallType::*MemFunc)(TP1);
+&nbsp;&nbsp;&nbsp; return MemberTranslator1&lt;P1,Callee,MemFunc&gt; (Class, Member);
+}</PRE></TD></TR></TBODY></TABLE>
+      <P>Well ! What's that.. P1 is the true type the callback expects, and is 
+      enforced using a dummy Functor1&lt;P1&gt;* as the first parameter. Next is 
+      the object owning the member to be called back. Because of the technique 
+      mentioned in 3.1. to allow automatic conversions when reasonable, both the 
+      class type and actual parameter type are allowed to differ from Callee and 
+      P1 : they become CallType and TP1. The return type is called TRT. For 
+      readability, an auxiliary MemFunc datatype is defined, but otherwise 
+      nothing much changed. 
+      <P><FONT size=+2>3.3. Automated generation</FONT> 
+      <P>At this point we have great flexibility in changing the types of our 
+      parameter, but it would be nice to have the ability to use a callback that 
+      takes no parameters at all (which could be called Functor0), or which 
+      takes more than one parameter instead (Functor2, Functor3, etc). Typing it 
+      all out is errorprone, so generating this automatically is more 
+      interesting, either using the preprocessor or a custom piece of code (C, 
+      perl, etc) 
+      <P><FONT size=+3>4. Links</FONT> 
+      <UL>
+        <LI><A href="http://www.bestweb.net/~rhickey/functor.html">The original 
+        Callback article</A> [note:disappeared] You'll notice lots of 
+        similarities in the code listed here and listed on that page. Like I 
+        mentioned in the introduction though, the original article immediately 
+        shows all the features without too much ado, and it leaves you figuring 
+        why things are like that; while the code presented here is actually the 
+        same as in the article, but with non-core parts cut out. If my page is 
+        crystal clear to you however, be sure to check the article for a much 
+        better indepth look. 
+        <LI><A 
+        href="http://sunsite.auc.dk/penguinplay/PenguinDoc/messaging/signals.html">PenguinPlay's 
+        Callback</A> is a more practical approach, showing how the transition 
+        could be made from this initial callback system to a more flexible 
+        system that has even more capabilities (multiple functions per callback, 
+        automatic mem management, etc) 
+</LI></UL></TD></TR></TBODY></TABLE></CENTER></BODY></HTML>
