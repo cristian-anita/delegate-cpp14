@@ -1,0 +1,6 @@
+# doxygen
+/html
+/latex
+
+# macOS
+.DS_Store

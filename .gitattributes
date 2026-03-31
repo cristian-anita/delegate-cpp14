@@ -1,0 +1,6 @@
+*.hpp	text eol=crlf
+*.cpp	text eol=crlf
+*.txt	text eol=crlf
+*.html	text eol=crlf
+*.zip	binary
+*.pdf	binary
