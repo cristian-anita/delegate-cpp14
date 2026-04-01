@@ -3,7 +3,9 @@
 
 ## Delegate:
 
-- is copyable, small (two pointers) and fast (no dynamic memory allocation, no virtual functions, all functions are inline (except *stubs* because their address is needed), delegate call involves only two extra calls (`operator()()` and *stub* function)).
+- is copyable, small (two pointers) and fast (no dynamic memory allocation, no virtual functions,
+all functions are inline (except *stubs* because their address is needed),
+delegate call involves only two extra calls (`operator()()` and *stub* function)).
 - supports (non-member) functions, methods (member functions) and functors/lambda.
 - is a single header library so it is easy to integrate in any project.
 
@@ -16,8 +18,10 @@ Because `Delegate` is non-owning special care is needed to ensure that the *bind
 ## Remarks:
 
 - Two delegates are considered equal if they are not *binded* or *binded* to the same target.
-- Equality comparison and `Delegate::IsBindedTo()` allows delegates to be easily used as callbacks that can be registered/unregistered (`::std::function_ref` is not equality comparable).
-- The solutions presented in *references* directory are not const-correct (they have the same problem as `::std::function`).
+- Equality comparison and `Delegate::IsBindedTo()` allows delegates to be easily used as callbacks that can be
+registered/unregistered (`::std::function_ref` is not equality comparable).
+- The solutions presented in *references* directory are not const-correct
+(they have the same problem as `::std::function`).
 
 
 ## See also:
