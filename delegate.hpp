@@ -341,6 +341,9 @@ public:
 	/// Binds the delegate to a target.
 	/// @{
 	
+	template <TRetVal (*TFunction)(TParams...)>
+	constexpr void Bind() noexcept;	///< Binds the delegate to a (non-member) function.
+	
 	/// Binds the delegate to a \p functor / lambda (\c TFunctor is auto-deduced).
 	template <class TFunctor,
 		typename = typename ::std::enable_if<
@@ -358,6 +361,9 @@ public:
 	/// \name Binder target testers (convenience methods).
 	/// Test if the delegate is binded to the given target.
 	/// @{
+	
+	template <TRetVal (*TFunction)(TParams...)>
+	constexpr bool IsBindedTo() const noexcept;	///< Test if the delegate is binded to the given (non-member) function.
 	
 	/// Test if the delegate is binded to the given \p functor / lambda (\c TFunctor is auto-deduced).
 	template <class TFunctor,
@@ -387,6 +393,9 @@ private:
 	
 	/// \name Stubs.
 	/// @{
+	
+	template <TRetVal (*TFunction)(TParams...)>
+	static TRetVal FunctionStub(ErasedObjectType* pTypeErasedObject, TParams... /* params */);
 	
 	template <class TFunctor>
 	static TRetVal FunctorStub(ErasedObjectType* pTypeErasedObject, TParams... params);
@@ -607,6 +616,13 @@ inline constexpr bool Delegate<TRetVal (TParams...) const>::operator!=(const Del
 
 
 template <typename TRetVal, typename... TParams>
+template <TRetVal (*TFunction)(TParams...)>
+inline constexpr void Delegate<TRetVal (TParams...) const>::Bind() noexcept {
+	this->pStub_ = &FunctionStub<TFunction>;
+	this->pTypeErasedObject_ = nullptr;
+}
+
+template <typename TRetVal, typename... TParams>
 template <class TFunctor, typename>
 inline void Delegate<TRetVal (TParams...) const>::Bind(const TFunctor& functor) noexcept {
 	this->pStub_ = &FunctorStub<TFunctor>;
@@ -626,6 +642,14 @@ inline void Delegate<TRetVal (TParams...) const>::Bind(const TClass& object) noe
 	this->pTypeErasedObject_ = const_cast<ErasedObjectType*>(static_cast<const ErasedObjectType*>(::std::addressof(object)));
 }
 
+
+template <typename TRetVal, typename... TParams>
+template <TRetVal (*TFunction)(TParams...)>
+inline constexpr bool Delegate<TRetVal (TParams...) const>::IsBindedTo() const noexcept {
+	Delegate delegate;
+	delegate.Bind<TFunction>();
+	return *this == delegate;
+}
 
 template <typename TRetVal, typename... TParams>
 template <class TFunctor, typename>
@@ -650,6 +674,14 @@ inline TRetVal Delegate<TRetVal (TParams...) const>::operator()(UParams&&... par
 	return (*this->pStub_)(this->pTypeErasedObject_, ::std::forward<UParams>(params)...);
 }
 
+
+template <typename TRetVal, typename... TParams>
+template <TRetVal (*TFunction)(TParams...)>
+TRetVal Delegate<TRetVal (TParams...) const>::FunctionStub(ErasedObjectType* pTypeErasedObject, TParams... params) {
+	(void)pTypeErasedObject;
+	
+	return (*TFunction)(::std::forward<TParams>(params)...);
+}
 
 template <typename TRetVal, typename... TParams>
 template <class TFunctor>

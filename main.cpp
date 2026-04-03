@@ -337,7 +337,18 @@ void TestConstDelegate() {
 	//************************************************************
 	// 2 bind/unbind
 	
-	// 2.1 functor
+	// 2.1 function
+	{
+		Delegate<long (long, long) const> delegate;
+		delegate.Bind<&FunctionAddLong>();
+		BRICXX_CHECK(delegate.IsBinded());
+		BRICXX_CHECK(delegate.IsBindedTo<&FunctionAddLong>());
+		BRICXX_CHECK(delegate(1L, 2L) == 3L);
+		delegate.Unbind();
+		BRICXX_CHECK(!delegate.IsBinded());
+	}
+	
+	// 2.2 functor
 	{
 		ConstFunctorAddLong constFunctorAddLong;
 		
@@ -350,7 +361,7 @@ void TestConstDelegate() {
 		BRICXX_CHECK(!delegate.IsBinded());
 	}
 	
-	// 2.2 lambda
+	// 2.3 lambda
 	{
 		auto constLambdaAddLong = [](long x, long y) -> long {
 			return x + y;
@@ -365,7 +376,7 @@ void TestConstDelegate() {
 		BRICXX_CHECK(!delegate.IsBinded());
 	}
 	
-	// 2.3 member
+	// 2.4 member
 	{
 		ConstClassAddLong constClassAddLong;
 		
@@ -383,7 +394,28 @@ void TestConstDelegate() {
 	//************************************************************
 	// 3 copy constructor/assignment, equality
 	
-	// 3.1 functor
+	// 3.1 function
+	{
+		Delegate<long (long, long) const> delegate;
+		delegate.Bind<&FunctionAddLong>();
+		
+		Delegate<long (long, long) const> delegate2 = delegate;
+		BRICXX_CHECK(delegate2.IsBinded());
+		BRICXX_CHECK(delegate2.IsBindedTo<&FunctionAddLong>());
+		BRICXX_CHECK(delegate2(1L, 2L) == 3L);
+		
+		Delegate<long (long, long) const> delegate3;
+		delegate3 = delegate;
+		BRICXX_CHECK(delegate3.IsBinded());
+		BRICXX_CHECK(delegate3.IsBindedTo<&FunctionAddLong>());
+		BRICXX_CHECK(delegate3(2L, 3L) == 5L);
+		
+		BRICXX_CHECK(delegate2 == delegate3);
+		delegate3.Unbind();
+		BRICXX_CHECK(delegate2 != delegate3);
+	}
+	
+	// 3.2 functor
 	{
 		ConstFunctorAddLong constFunctorAddLong;
 		
@@ -406,7 +438,7 @@ void TestConstDelegate() {
 		BRICXX_CHECK(delegate2 != delegate3);
 	}
 	
-	// 3.2 lambda
+	// 3.3 lambda
 	{
 		auto constLambdaAddLong = [](long x, long y) -> long {
 			return x + y;
@@ -431,7 +463,7 @@ void TestConstDelegate() {
 		BRICXX_CHECK(delegate2 != delegate3);
 	}
 	
-	// 3.3 member
+	// 3.4 member
 	{
 		ConstClassAddLong constClassAddLong;
 		
