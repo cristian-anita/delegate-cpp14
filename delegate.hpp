@@ -102,7 +102,7 @@ namespace bricxx {
 /// if (!functionDelegate('a')) throw runtime_error("function test failed");
 /// 
 /// // lambda/functor
-/// int numCalls = 0;
+/// unsigned int numCalls = 0U;
 /// auto lambda = [&numCalls](int x, int y) mutable -> bool {
 /// 	++numCalls;
 /// 	return x > y;
@@ -111,7 +111,7 @@ namespace bricxx {
 /// lambdaDelegate.Bind(lambda);
 /// if (!lambdaDelegate.IsBindedTo(lambda)) throw runtime_error("lambda test failed");
 /// if (!lambdaDelegate(2, 1)) throw runtime_error("lambda test failed");
-/// if (numCalls != 1) throw runtime_error("lambda test failed");
+/// if (numCalls != 1U) throw runtime_error("lambda test failed");
 /// 
 /// // method (member function)
 /// string hello = "Hello, World!";
