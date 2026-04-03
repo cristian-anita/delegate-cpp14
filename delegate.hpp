@@ -67,7 +67,7 @@ namespace bricxx {
 /// - is copyable, small (two pointers) and fast (no dynamic memory allocation, no virtual functions,
 /// all functions are inline (except stubs because their address is needed),
 /// delegate call involves only two extra calls (operator()() and stub function)).
-/// - supports functions, member functions and functors/lambda.
+/// - supports (member) functions and functors/lambda.
 /// - is a single header library so it is easy to integrate in any project.
 ///
 /// \attention Because \c Delegate is non-owning special care is needed to ensure that the binded target outlive it.
