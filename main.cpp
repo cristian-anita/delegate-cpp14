@@ -80,7 +80,7 @@ public:
 
 
 void TestHeaderDoc() {
-	// (non-member) function
+	// (static member) function
 	Delegate<int (int)> functionDelegate;
 	functionDelegate.Bind<&::islower>();
 	if (!functionDelegate.IsBindedTo<&::islower>()) throw runtime_error("function test failed");
@@ -98,7 +98,7 @@ void TestHeaderDoc() {
 	if (!lambdaDelegate(2, 1)) throw runtime_error("lambda test failed");
 	if (numCalls != 1U) throw runtime_error("lambda test failed");
 	
-	// method (member function)
+	// non-static member function
 	string hello = "Hello, World!";
 	Delegate<void ()> methodDelegate;
 	methodDelegate.Bind<string, &string::clear>(hello);
@@ -152,7 +152,7 @@ void TestDelegate() {
 	//************************************************************
 	// 2 bind/unbind
 	
-	// 2.1 function
+	// 2.1 (static member) function
 	{
 		Delegate<int (int, int)> delegate;
 		delegate.Bind<&FunctionAddInt>();
@@ -212,7 +212,7 @@ void TestDelegate() {
 		BRICXX_CHECK(numCalls == 2);
 	}
 	
-	// 2.4 member
+	// 2.4 non-static member function
 	{
 		ClassAddInt classAddInt;
 		
@@ -239,7 +239,7 @@ void TestDelegate() {
 	//************************************************************
 	// 3 copy constructor/assignment, equality
 	
-	// 3.1 function
+	// 3.1 (static member) function
 	{
 		Delegate<int (int, int)> delegate;
 		delegate.Bind<&FunctionAddInt>();
@@ -314,7 +314,7 @@ void TestDelegate() {
 		BRICXX_CHECK(delegate2 != delegate3);
 	}
 	
-	// 3.4 member
+	// 3.4 non-static member function
 	{
 		ClassAddInt classAddInt;
 		
@@ -362,7 +362,7 @@ void TestConstDelegate() {
 	//************************************************************
 	// 2 bind/unbind
 	
-	// 2.1 function
+	// 2.1 (static member) function
 	{
 		Delegate<int (int, int) const> delegate;
 		delegate.Bind<&FunctionAddInt>();
@@ -416,7 +416,7 @@ void TestConstDelegate() {
 		BRICXX_CHECK(delegate1(1, 2) == 3);
 	}
 	
-	// 2.4 member
+	// 2.4 non-static member function
 	{
 		ConstClassAddInt constClassAddInt;
 		
@@ -441,7 +441,7 @@ void TestConstDelegate() {
 	//************************************************************
 	// 3 copy constructor/assignment, equality
 	
-	// 3.1 function
+	// 3.1 (static member) function
 	{
 		Delegate<int (int, int) const> delegate;
 		delegate.Bind<&FunctionAddInt>();
@@ -510,7 +510,7 @@ void TestConstDelegate() {
 		BRICXX_CHECK(delegate2 != delegate3);
 	}
 	
-	// 3.4 member
+	// 3.4 non-static member function
 	{
 		ConstClassAddInt constClassAddInt;
 		
@@ -561,7 +561,7 @@ void TestConstDelegate() {
 		(void)delegate;
 	}
 	
-	// 4.3 member
+	// 4.3 non-static member function
 	{
 		ClassAddInt classAddInt;
 		

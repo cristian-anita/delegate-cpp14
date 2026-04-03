@@ -67,7 +67,7 @@ namespace bricxx {
 /// - is copyable, small (two pointers) and fast (no dynamic memory allocation, no virtual functions,
 /// all functions are inline (except stubs because their address is needed),
 /// delegate call involves only two extra calls (operator()() and stub function)).
-/// - supports (non-member) functions, methods (member functions) and functors/lambda.
+/// - supports functions, member functions and functors/lambda.
 /// - is a single header library so it is easy to integrate in any project.
 ///
 /// \attention Because \c Delegate is non-owning special care is needed to ensure that the binded target outlive it.
@@ -95,7 +95,7 @@ namespace bricxx {
 ///
 /// <b>Minimal introduction/examples</b> (please see tests for more details):
 /// \code
-/// // (non-member) function
+/// // (static member) function
 /// Delegate<int (int)> functionDelegate;
 /// functionDelegate.Bind<&::islower>();
 /// if (!functionDelegate.IsBindedTo<&::islower>()) throw runtime_error("function test failed");
@@ -113,7 +113,7 @@ namespace bricxx {
 /// if (!lambdaDelegate(2, 1)) throw runtime_error("lambda test failed");
 /// if (numCalls != 1U) throw runtime_error("lambda test failed");
 /// 
-/// // method (member function)
+/// // non-static member function
 /// string hello = "Hello, World!";
 /// Delegate<void ()> methodDelegate;
 /// methodDelegate.Bind<string, &string::clear>(hello);
@@ -241,7 +241,7 @@ public:
 	/// @{
 	
 	template <TRetVal (*TFunction)(TParams...)>
-	constexpr void Bind() noexcept;	///< Binds the delegate to a (non-member) function.
+	constexpr void Bind() noexcept;	///< Binds the delegate to a (static member) function.
 	
 	template <class TFunctor,
 		typename = typename ::std::enable_if<
@@ -251,7 +251,7 @@ public:
 	void Bind(TFunctor& functor) noexcept;	///< Binds the delegate to a \p functor / lambda (\c TFunctor is auto-deduced).
 	
 	template <class TClass, TRetVal (TClass::*TMethod)(TParams...)>
-	void Bind(TClass& object) noexcept;	///< Binds the delegate to an \p object + method (member function).
+	void Bind(TClass& object) noexcept;	///< Binds the delegate to an \p object + non-static member function.
 	
 	/// @}
 	
@@ -261,7 +261,7 @@ public:
 	/// @{
 	
 	template <TRetVal (*TFunction)(TParams...)>
-	constexpr bool IsBindedTo() const noexcept;	///< Test if the delegate is binded to the given (non-member) function.
+	constexpr bool IsBindedTo() const noexcept;	///< Test if the delegate is binded to the given (static member) function.
 	
 	/// Test if the delegate is binded to the given \p functor / lambda (\c TFunctor is auto-deduced).
 	template <class TFunctor,
@@ -271,7 +271,7 @@ public:
 	>
 	bool IsBindedTo(TFunctor& functor) const noexcept;
 	
-	/// Test if the delegate is binded to the given \p object + method (member function).
+	/// Test if the delegate is binded to the given \p object + non-static member function.
 	template <class TClass, TRetVal (TClass::*TMethod)(TParams...)>
 	bool IsBindedTo(TClass& object) const noexcept;
 	
@@ -291,7 +291,7 @@ public:
 	/// @{
 	
 	template <TRetVal (*TFunction)(TParams...)>
-	static constexpr Delegate CreateAndBind() noexcept;	///< Creates a delegate and binds it to the given (non-member) function.
+	static constexpr Delegate CreateAndBind() noexcept;	///< Creates a delegate and binds it to the given (static member) function.
 	
 	/// Creates a delegate and binds it to the given \p functor / lambda (\c TFunctor is auto-deduced).
 	template <class TFunctor,
@@ -301,7 +301,7 @@ public:
 	>
 	static Delegate CreateAndBind(TFunctor& functor) noexcept;
 	
-	/// Creates a delegate and binds it to the given \p object + method (member function).
+	/// Creates a delegate and binds it to the given \p object + non-static member function.
 	template <class TClass, TRetVal (TClass::*TMethod)(TParams...)>
 	static Delegate CreateAndBind(TClass& object) noexcept;
 	
@@ -364,7 +364,7 @@ public:
 	/// @{
 	
 	template <TRetVal (*TFunction)(TParams...)>
-	constexpr void Bind() noexcept;	///< Binds the delegate to a (non-member) function.
+	constexpr void Bind() noexcept;	///< Binds the delegate to a (static member) function.
 	
 	/// Binds the delegate to a \p functor / lambda (\c TFunctor is auto-deduced).
 	template <class TFunctor,
@@ -375,7 +375,7 @@ public:
 	void Bind(const TFunctor& functor) noexcept;
 	
 	template <class TClass, TRetVal (TClass::*TMethod)(TParams...) const>
-	void Bind(const TClass& object) noexcept;	///< Binds the delegate to an \p object + method (member function).
+	void Bind(const TClass& object) noexcept;	///< Binds the delegate to an \p object + non-static member function.
 	
 	/// @}
 	
@@ -385,7 +385,7 @@ public:
 	/// @{
 	
 	template <TRetVal (*TFunction)(TParams...)>
-	constexpr bool IsBindedTo() const noexcept;	///< Test if the delegate is binded to the given (non-member) function.
+	constexpr bool IsBindedTo() const noexcept;	///< Test if the delegate is binded to the given (static member) function.
 	
 	/// Test if the delegate is binded to the given \p functor / lambda (\c TFunctor is auto-deduced).
 	template <class TFunctor,
@@ -395,7 +395,7 @@ public:
 	>
 	bool IsBindedTo(const TFunctor& functor) const noexcept;
 	
-	/// Test if the delegate is binded to the given \p object + method (member function).
+	/// Test if the delegate is binded to the given \p object + non-static member function.
 	template <class TClass, TRetVal (TClass::*TMethod)(TParams...) const>
 	bool IsBindedTo(const TClass& object) const noexcept;
 	
@@ -415,7 +415,7 @@ public:
 	/// @{
 	
 	template <TRetVal (*TFunction)(TParams...)>
-	static constexpr Delegate CreateAndBind() noexcept;	///< Creates a delegate and binds it to the given (non-member) function.
+	static constexpr Delegate CreateAndBind() noexcept;	///< Creates a delegate and binds it to the given (static member) function.
 	
 	/// Creates a delegate and binds it to the given \p functor / lambda (\c TFunctor is auto-deduced).
 	template <class TFunctor,
@@ -425,7 +425,7 @@ public:
 	>
 	static Delegate CreateAndBind(const TFunctor& functor) noexcept;
 	
-	/// Creates a delegate and binds it to the given \p object + method (member function).
+	/// Creates a delegate and binds it to the given \p object + non-static member function.
 	template <class TClass, TRetVal (TClass::*TMethod)(TParams...) const>
 	static Delegate CreateAndBind(const TClass& object) noexcept;
 	

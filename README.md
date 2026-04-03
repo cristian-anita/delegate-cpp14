@@ -6,7 +6,7 @@
 - is copyable, small (two pointers) and fast (no dynamic memory allocation, no virtual functions,
 all functions are inline (except *stubs* because their address is needed),
 delegate call involves only two extra calls (`operator()()` and *stub* function)).
-- supports (non-member) functions, methods (member functions) and functors/lambda.
+- supports functions, member functions and functors/lambda.
 - is a single header library so it is easy to integrate in any project.
 
 
@@ -53,14 +53,14 @@ registered/unregistered (`::std::function_ref` is not equality comparable).
 ## Minimal introduction/examples (please see tests for more details):
 
 ```cpp
-// (non-member) function
+// (static member) function
 Delegate<int (int)> functionDelegate;
 functionDelegate.Bind<&::islower>();
 if (!functionDelegate.IsBindedTo<&::islower>()) throw runtime_error("function test failed");
 if (!functionDelegate('a')) throw runtime_error("function test failed");
 
 // lambda/functor
-int numCalls = 0;
+unsigned int numCalls = 0U;
 auto lambda = [&numCalls](int x, int y) mutable -> bool {
 	++numCalls;
 	return x > y;
@@ -69,9 +69,9 @@ Delegate<bool (int, int)> lambdaDelegate;
 lambdaDelegate.Bind(lambda);
 if (!lambdaDelegate.IsBindedTo(lambda)) throw runtime_error("lambda test failed");
 if (!lambdaDelegate(2, 1)) throw runtime_error("lambda test failed");
-if (numCalls != 1) throw runtime_error("lambda test failed");
+if (numCalls != 1U) throw runtime_error("lambda test failed");
 
-// method (member function)
+// non-static member function
 string hello = "Hello, World!";
 Delegate<void ()> methodDelegate;
 methodDelegate.Bind<string, &string::clear>(hello);
