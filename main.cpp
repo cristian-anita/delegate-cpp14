@@ -53,18 +53,18 @@ class FunctorAddInt {
 public:
 	int operator()(int x, int y);
 	
-	int GetNumCalls() const;
+	unsigned int GetNumCalls() const;
 private:
-	int numCalls_ = 0;
+	unsigned int numCalls_ = 0U;
 };
 
 class ClassAddInt {
 public:
 	int Add(int x, int y);
 	
-	int GetNumCalls() const;
+	unsigned int GetNumCalls() const;
 private:
-	int numCalls_ = 0;
+	unsigned int numCalls_ = 0U;
 };
 
 
@@ -177,7 +177,7 @@ void TestDelegate() {
 		BRICXX_CHECK(delegate.IsBinded());
 		BRICXX_CHECK(delegate.IsBindedTo(functorAddInt));
 		BRICXX_CHECK(delegate(1, 2) == 3);
-		BRICXX_CHECK(functorAddInt.GetNumCalls() == 1);
+		BRICXX_CHECK(functorAddInt.GetNumCalls() == 1U);
 		delegate.Unbind();
 		BRICXX_CHECK(!delegate.IsBinded());
 		
@@ -185,12 +185,12 @@ void TestDelegate() {
 		BRICXX_CHECK(delegate1.IsBinded());
 		BRICXX_CHECK(delegate1.IsBindedTo(functorAddInt));
 		BRICXX_CHECK(delegate1(1, 2) == 3);
-		BRICXX_CHECK(functorAddInt.GetNumCalls() == 2);
+		BRICXX_CHECK(functorAddInt.GetNumCalls() == 2U);
 	}
 	
 	// 2.3 lambda
 	{
-		int numCalls = 0;
+		unsigned int numCalls = 0U;
 		auto lambdaAddInt = [&numCalls](int x, int y) mutable -> int {
 			++numCalls;
 			return x + y;
@@ -201,7 +201,7 @@ void TestDelegate() {
 		BRICXX_CHECK(delegate.IsBinded());
 		BRICXX_CHECK(delegate.IsBindedTo(lambdaAddInt));
 		BRICXX_CHECK(delegate(1, 2) == 3);
-		BRICXX_CHECK(numCalls == 1);
+		BRICXX_CHECK(numCalls == 1U);
 		delegate.Unbind();
 		BRICXX_CHECK(!delegate.IsBinded());
 		
@@ -209,7 +209,7 @@ void TestDelegate() {
 		BRICXX_CHECK(delegate1.IsBinded());
 		BRICXX_CHECK(delegate1.IsBindedTo(lambdaAddInt));
 		BRICXX_CHECK(delegate1(1, 2) == 3);
-		BRICXX_CHECK(numCalls == 2);
+		BRICXX_CHECK(numCalls == 2U);
 	}
 	
 	// 2.4 non-static member function
@@ -222,17 +222,17 @@ void TestDelegate() {
 		bool classAddIntIsBindedTo = delegate.IsBindedTo<ClassAddInt, &ClassAddInt::Add>(classAddInt);
 		BRICXX_CHECK(classAddIntIsBindedTo);
 		BRICXX_CHECK(delegate(1, 2) == 3);
-		BRICXX_CHECK(classAddInt.GetNumCalls() == 1);
+		BRICXX_CHECK(classAddInt.GetNumCalls() == 1U);
 		delegate.Unbind();
 		BRICXX_CHECK(!delegate.IsBinded());
 		
-		Delegate<int (int, int)> delegate1 = Delegate<int (int, int)>::CreateAndBind<ClassAddInt,
-			&ClassAddInt::Add>(classAddInt);
+		Delegate<int (int, int)> delegate1 = Delegate<int (int, int)>::CreateAndBind<ClassAddInt, &ClassAddInt::Add>(
+			classAddInt);
 		BRICXX_CHECK(delegate1.IsBinded());
 		classAddIntIsBindedTo = delegate1.IsBindedTo<ClassAddInt, &ClassAddInt::Add>(classAddInt);
 		BRICXX_CHECK(classAddIntIsBindedTo);
 		BRICXX_CHECK(delegate1(1, 2) == 3);
-		BRICXX_CHECK(classAddInt.GetNumCalls() == 2);
+		BRICXX_CHECK(classAddInt.GetNumCalls() == 2U);
 	}
 	
 	
@@ -271,14 +271,14 @@ void TestDelegate() {
 		BRICXX_CHECK(delegate2.IsBinded());
 		BRICXX_CHECK(delegate2.IsBindedTo(functorAddInt));
 		BRICXX_CHECK(delegate2(1, 2) == 3);
-		BRICXX_CHECK(functorAddInt.GetNumCalls() == 1);
+		BRICXX_CHECK(functorAddInt.GetNumCalls() == 1U);
 		
 		Delegate<int (int, int)> delegate3;
 		delegate3 = delegate;
 		BRICXX_CHECK(delegate3.IsBinded());
 		BRICXX_CHECK(delegate3.IsBindedTo(functorAddInt));
 		BRICXX_CHECK(delegate3(2, 3) == 5);
-		BRICXX_CHECK(functorAddInt.GetNumCalls() == 2);
+		BRICXX_CHECK(functorAddInt.GetNumCalls() == 2U);
 		
 		BRICXX_CHECK(delegate2 == delegate3);
 		delegate3.Unbind();
@@ -287,7 +287,7 @@ void TestDelegate() {
 	
 	// 3.3 lambda
 	{
-		int numCalls = 0;
+		unsigned int numCalls = 0U;
 		auto lambdaAddInt = [&numCalls](int x, int y) mutable -> int {
 			++numCalls;
 			return x + y;
@@ -300,14 +300,14 @@ void TestDelegate() {
 		BRICXX_CHECK(delegate2.IsBinded());
 		BRICXX_CHECK(delegate2.IsBindedTo(lambdaAddInt));
 		BRICXX_CHECK(delegate2(1, 2) == 3);
-		BRICXX_CHECK(numCalls == 1);
+		BRICXX_CHECK(numCalls == 1U);
 		
 		Delegate<int (int, int)> delegate3;
 		delegate3 = delegate;
 		BRICXX_CHECK(delegate3.IsBinded());
 		BRICXX_CHECK(delegate3.IsBindedTo(lambdaAddInt));
 		BRICXX_CHECK(delegate3(2, 3) == 5);
-		BRICXX_CHECK(numCalls == 2);
+		BRICXX_CHECK(numCalls == 2U);
 		
 		BRICXX_CHECK(delegate2 == delegate3);
 		delegate3.Unbind();
@@ -326,7 +326,7 @@ void TestDelegate() {
 		bool classAddIntIsBindedTo = delegate2.IsBindedTo<ClassAddInt, &ClassAddInt::Add>(classAddInt);
 		BRICXX_CHECK(classAddIntIsBindedTo);
 		BRICXX_CHECK(delegate2(1, 2) == 3);
-		BRICXX_CHECK(classAddInt.GetNumCalls() == 1);
+		BRICXX_CHECK(classAddInt.GetNumCalls() == 1U);
 		
 		Delegate<int (int, int)> delegate3;
 		delegate3 = delegate;
@@ -334,7 +334,7 @@ void TestDelegate() {
 		classAddIntIsBindedTo = delegate3.IsBindedTo<ClassAddInt, &ClassAddInt::Add>(classAddInt);
 		BRICXX_CHECK(classAddIntIsBindedTo);
 		BRICXX_CHECK(delegate3(2, 3) == 5);
-		BRICXX_CHECK(classAddInt.GetNumCalls() == 2);
+		BRICXX_CHECK(classAddInt.GetNumCalls() == 2U);
 		
 		BRICXX_CHECK(delegate2 == delegate3);
 		delegate3.Unbind();
@@ -582,7 +582,7 @@ inline int FunctorAddInt::operator()(int x, int y) {
 	return x + y;
 }
 
-inline int FunctorAddInt::GetNumCalls() const {
+inline unsigned int FunctorAddInt::GetNumCalls() const {
 	return numCalls_;
 }
 
@@ -591,7 +591,7 @@ inline int ClassAddInt::Add(int x, int y) {
 	return x + y;
 }
 
-inline int ClassAddInt::GetNumCalls() const {
+inline unsigned int ClassAddInt::GetNumCalls() const {
 	return numCalls_;
 }
 
