@@ -85,11 +85,15 @@ namespace bricxx {
 /// - Sergey Alexandrovich Kryukov, CodeProject: The Impossibly Fast C++ Delegates, Fixed
 /// - Aleksei Trunov, CodeProject: Yet Another Generalized Functors Implementation in C++
 /// - JaeWook Choi, CodeProject: Fast C++ Delegate
-/// - <a href="https://rodusek.com/posts/2021/02/24/creating-a-fast-and-efficient-delegate-type-part-1/">Matthew Rodusek: Creating a Fast and Efficient Delegate Type (Part 1)</a>
-/// - <a href="https://rodusek.com/posts/2021/02/26/creating-a-fast-and-efficient-delegate-type-part-2/">Matthew Rodusek: Creating a Fast and Efficient Delegate Type (Part 2)</a>
-/// - <a href="https://rodusek.com/posts/2021/02/26/creating-a-fast-and-efficient-delegate-type-part-3/">Matthew Rodusek: Creating a Fast and Efficient Delegate Type (Part 3)</a>
+/// - <a href="https://rodusek.com/posts/2021/02/24/creating-a-fast-and-efficient-delegate-type-part-1/">
+/// Matthew Rodusek: Creating a Fast and Efficient Delegate Type (Part 1)</a>
+/// - <a href="https://rodusek.com/posts/2021/02/26/creating-a-fast-and-efficient-delegate-type-part-2/">
+/// Matthew Rodusek: Creating a Fast and Efficient Delegate Type (Part 2)</a>
+/// - <a href="https://rodusek.com/posts/2021/02/26/creating-a-fast-and-efficient-delegate-type-part-3/">
+/// Matthew Rodusek: Creating a Fast and Efficient Delegate Type (Part 3)</a>
 /// - <a href="https://github.com/bitwizeshift/Delegate">Matthew Rodusek: Unbelievably Fast Delegate</a>
-/// - <a href="https://codereview.stackexchange.com/questions/14730/impossibly-fast-delegate-in-c11">user1095108: Impossibly fast delegate in C++11</a>
+/// - <a href="https://codereview.stackexchange.com/questions/14730/impossibly-fast-delegate-in-c11">
+/// user1095108: Impossibly fast delegate in C++11</a>
 /// - <a href="https://github.com/jamboree/CxxFunctionBenchmark/blob/master/delegate.hpp">user1095108: delegate.hpp</a>
 /// - \b references directory in this project that contains the above.
 ///
@@ -290,8 +294,9 @@ public:
 	/// Creates a delegate and binds it to the given target.
 	/// @{
 	
+	/// Creates a delegate and binds it to the given (static member) function.
 	template <TRetVal (*TFunction)(TParams...)>
-	static constexpr Delegate CreateAndBind() noexcept;	///< Creates a delegate and binds it to the given (static member) function.
+	static constexpr Delegate CreateAndBind() noexcept;
 	
 	/// Creates a delegate and binds it to the given \p functor / lambda (\c TFunctor is auto-deduced).
 	template <class TFunctor,
@@ -414,8 +419,9 @@ public:
 	/// Creates a delegate and binds it to the given target.
 	/// @{
 	
+	/// Creates a delegate and binds it to the given (static member) function.
 	template <TRetVal (*TFunction)(TParams...)>
-	static constexpr Delegate CreateAndBind() noexcept;	///< Creates a delegate and binds it to the given (static member) function.
+	static constexpr Delegate CreateAndBind() noexcept;
 	
 	/// Creates a delegate and binds it to the given \p functor / lambda (\c TFunctor is auto-deduced).
 	template <class TFunctor,
