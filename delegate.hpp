@@ -321,7 +321,7 @@ private:
 	/// @{
 	
 	template <TRetVal (*TFunction)(TParams...)>
-	static constexpr TRetVal FunctionStub(ErasedObjectType* pTypeErasedObject, TParams... /* params */);
+	static constexpr TRetVal FunctionStub(ErasedObjectType* pTypeErasedObject, TParams... params);
 	
 	template <class TFunctor>
 	static constexpr TRetVal FunctorStub(ErasedObjectType* pTypeErasedObject, TParams... params);
@@ -446,7 +446,7 @@ private:
 	/// @{
 	
 	template <TRetVal (*TFunction)(TParams...)>
-	static constexpr TRetVal FunctionStub(ErasedObjectType* pTypeErasedObject, TParams... /* params */);
+	static constexpr TRetVal FunctionStub(ErasedObjectType* pTypeErasedObject, TParams... params);
 	
 	template <class TFunctor>
 	static constexpr TRetVal FunctorStub(ErasedObjectType* pTypeErasedObject, TParams... params);
@@ -520,8 +520,9 @@ inline constexpr bool DelegateBase<TRetVal, TParams...>::operator!=(const Delega
 
 
 template <typename TRetVal, typename... TParams>
-TRetVal DelegateBase<TRetVal, TParams...>::NullStub(ErasedObjectType* pTypeErasedObject, TParams... /* params */) {
+TRetVal DelegateBase<TRetVal, TParams...>::NullStub(ErasedObjectType* pTypeErasedObject, TParams... params) {
 	(void)pTypeErasedObject;
+	(void)sizeof...(params);
 	
 	throw BadDelegateCall();
 }
