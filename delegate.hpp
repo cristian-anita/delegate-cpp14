@@ -150,7 +150,7 @@ namespace bricxx {
 /// }
 /// if (!caught) throw runtime_error("BadDelegateCall test failed");
 /// \endcode
-template <typename TSignature>
+template <typename TRetVal, typename... TParams>
 class Delegate;
 
 
